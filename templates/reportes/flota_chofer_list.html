@@ -1,0 +1,47 @@
+{% extends "reportes/base.html" %}
+{% load static %}
+
+{% block title %}Gestión de Choferes - ACME TRANS{% endblock %}
+{% block page_title %}Gestión de Choferes{% endblock %}
+
+{% block content %}
+
+<div class="content-card">
+    <div class="form-actions" style="margin-top: 0; margin-bottom: 1.5rem;">
+        <h4>Choferes Registrados</h4>
+        <a href="{% url 'flota_chofer_create' %}" class="btn btn-primary" style="width: auto;">+ Añadir Chofer</a>
+    </div>
+    
+    <table class="report-table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>RUT</th>
+                <th>Centro</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for chofer in lista_choferes %}
+            <tr>
+                <td><strong>{{ chofer.nombre }}</strong></td>
+                <td>{{ chofer.rut }}</td>
+                <td>{{ chofer.centro.nombre }}</td>
+                <td>
+                    <a href="{% url 'flota_chofer_update' chofer.pk %}" class="btn-link">Editar</a>
+                    <a href="{% url 'flota_chofer_delete' chofer.pk %}" class="btn-link" style="color: var(--color-red); margin-left: 10px;"
+                       onclick="return confirm('¿Estás seguro de que quieres eliminar a {{ chofer.nombre }}?');">
+                       Eliminar
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">No hay choferes registrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

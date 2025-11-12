@@ -1,0 +1,592 @@
+/* static/css/style.css (COMPLETO Y CORREGIDO) */
+
+/* --- Configuración Global y Variables --- */
+:root {
+    --color-primary: #0052cc; 
+    --color-light-blue: #e6f0ff;
+    --color-dark-blue: #003e99;
+    --color-text: #172b4d;
+    --color-text-light: #5e6c84;
+    --color-bg: #f4f5f7;       
+    --color-white: #ffffff;
+    --color-border: #dfe1e6;
+    --color-green: #36b37e;
+    --color-red: #de350b;
+    --color-yellow: #ffab00;
+}
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--color-text);
+    background-color: var(--color-bg);
+}
+
+a {
+    text-decoration: none;
+    color: var(--color-primary);
+}
+
+/* --- 1. Estilos de Login (login.html) --- */
+.login-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+.login-container {
+    padding: 20px;
+}
+.login-box {
+    background: var(--color-white);
+    padding: 2.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    width: 360px;
+    text-align: center;
+}
+.login-logo {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 50px;
+    background: var(--color-primary);
+    color: var(--color-white);
+    border-radius: 8px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+.login-logo span {
+    transform: scale(0.9);
+}
+.login-box h2 {
+    margin: 0.5rem 0;
+}
+.login-box p {
+    color: var(--color-text-light);
+    margin-bottom: 2rem;
+}
+.login-form .form-group {
+    margin-bottom: 1.25rem;
+    text-align: left;
+}
+.login-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+.login-form input[type="text"],
+.login-form input[type="password"] {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    box-sizing: border-box; 
+    background: #fafbfc;
+}
+.login-form input[type="text"]:focus,
+.login-form input[type="password"]:focus {
+    border-color: var(--color-primary);
+    background: var(--color-white);
+    outline: none;
+}
+.btn,
+.btn-primary {
+    display: block;
+    width: 100%;
+    padding: 0.875rem;
+    border: none;
+    border-radius: 4px;
+    background: var(--color-primary);
+    color: var(--color-white);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.btn-primary:hover {
+    background: var(--color-dark-blue);
+}
+.btn-secondary {
+    background-color: #444;
+    color: #fff;
+}
+.btn-secondary:hover {
+    background-color: #555;
+}
+.form-errors {
+    background: #ffebe6;
+    color: #bf2600;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+    text-align: left;
+}
+.form-errors p {
+    margin: 0;
+}
+
+/* --- 2. Estilos de la App Principal (base.html) --- */
+.app-body {
+    display: flex;
+    height: 100vh;
+}
+.sidebar {
+    width: 240px;
+    background: var(--color-white);
+    border-right: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+}
+.sidebar-header .logo {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 32px;
+    height: 32px;
+    background: var(--color-primary);
+    color: var(--color-white);
+    border-radius: 4px;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+.sidebar-header h1 {
+    font-size: 1.25rem;
+    margin: 0 0 0 0.75rem;
+}
+.sidebar-nav {
+    padding: 1rem;
+    flex-grow: 1;
+}
+.nav-item {
+    display: block;
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    color: var(--color-text-light);
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+.nav-item:hover {
+    background: var(--color-bg);
+}
+.nav-item.active {
+    background: var(--color-light-blue);
+    color: var(--color-primary);
+    font-weight: 600;
+}
+.sidebar-footer {
+    padding: 1.5rem;
+    border-top: 1px solid var(--color-border);
+    color: var(--color-text-light);
+    font-size: 0.8rem;
+}
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 2rem;
+    background: var(--color-white);
+    border-bottom: 1px solid var(--color-border);
+    flex-shrink: 0;
+}
+.topbar-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+.topbar-user {
+    display: flex;
+    align-items: center;
+    color: var(--color-text-light);
+}
+.btn-logout {
+    margin-left: 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+.page-content {
+    padding: 2rem;
+}
+
+/* --- Estilos Generales de Formularios y Tarjetas --- */
+.form-control,
+select.form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    box-sizing: border-box;
+    background: #fafbfc;
+    font-size: 0.9rem;
+}
+input:focus, select:focus {
+    border-color: var(--color-primary);
+    background: var(--color-white);
+    outline: none;
+}
+.form-group {
+    margin-bottom: 1.25rem;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+.content-card,
+.content-card-large,
+.content-card-small {
+    background: var(--color-white);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+.content-card h4,
+.content-card-large h4,
+.content-card-small h4 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+.content-row {
+    display: flex;
+    gap: 1.5rem;
+}
+.content-card-large {
+    flex-grow: 1;
+}
+.content-card-small {
+    width: 320px;
+    flex-shrink: 0;
+}
+
+/* --- 3. Estilos del Dashboard (dashboard.html) --- */
+.kpi-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+.kpi-card {
+    background: var(--color-white);
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+.kpi-card h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+    font-weight: 500;
+}
+.kpi-value {
+    font-size: 2rem;
+    font-weight: 600;
+}
+.kpi-value.kpi-danger {
+    color: var(--color-red);
+}
+
+/* --- ¡NUEVOS ESTILOS PARA GRÁFICOS! --- */
+.chart-container {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+/* Gráfico de Torta (Doughnut) */
+@property --p_disponible {
+  syntax: '<integer>';
+  inherits: false;
+  initial-value: 0;
+}
+@property --p_enruta {
+  syntax: '<integer>';
+  inherits: false;
+  initial-value: 0;
+}
+@property --p_mantenimiento {
+  syntax: '<integer>';
+  inherits: false;
+  initial-value: 0;
+}
+.pie-chart {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    /* Calculamos el total y los porcentajes para el gradiente.
+       '1turn' es un círculo completo.
+    */
+    --total: calc(var(--p_disponible) + var(--p_enruta) + var(--p_mantenimiento));
+    --pct_disponible: calc(var(--p_disponible) / var(--total));
+    --pct_enruta: calc(var(--p_enruta) / var(--total));
+    
+    --deg_disponible: calc(var(--pct_disponible) * 1turn);
+    --deg_enruta: calc(var(--pct_enruta) * 1turn);
+    
+    background: conic-gradient(
+        var(--color-green) 0, var(--deg_disponible),
+        var(--color-yellow) 0, calc(var(--deg_disponible) + var(--deg_enruta)),
+        var(--color-red) 0, 1turn
+    );
+    flex-shrink: 0;
+}
+
+/* Leyenda del Gráfico */
+.pie-legend {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
+}
+.pie-legend li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+.legend-item {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    margin-right: 0.75rem;
+}
+
+/* Leyenda para gastos (vertical) */
+.pie-legend.vertical li {
+    justify-content: space-between;
+}
+.pie-legend .legend-value {
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+
+/* --- FIN NUEVOS ESTILOS --- */
+
+.activity-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.activity-list li {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--color-bg);
+}
+.activity-list li:last-child {
+    border: none;
+}
+.activity-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--color-light-blue);
+    color: var(--color-dark-blue);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin-right: 0.75rem;
+}
+.activity-text strong {
+    color: var(--color-text);
+}
+.activity-time {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+    margin-top: 2px;
+}
+
+/* --- 4. Estilos de Reportes (reportes_generados.html) --- */
+.filter-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 1rem;
+}
+.filter-form .form-group {
+    flex-grow: 1;
+    margin-bottom: 0;
+}
+.filter-form .btn {
+    flex-shrink: 0;
+    width: auto;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    box-sizing: border-box; 
+}
+.report-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+.report-table th,
+.report-table td {
+    padding: 0.875rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+}
+.report-table th {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: var(--color-text-light);
+    font-weight: 600;
+}
+.report-table td {
+    font-size: 0.9rem;
+}
+.btn-link {
+    font-weight: 600;
+}
+.status {
+    font-size: 0.8rem;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    text-transform: uppercase;
+}
+.status-procesado { 
+    background-color: #e3fcef;
+    color: #065535;
+}
+.status-pendiente { /* Para camiones 'En Ruta' */
+    background-color: #fffae6;
+    color: #996f00;
+}
+.status-rechazado { /* Para camiones 'En Mantenimiento' */
+    background-color: #ffebe6;
+    color: #bf2600;
+}
+
+/* --- 5. Estilos de Configuración (configuracion.html) --- */
+/* (Estilos de 'switch' eliminados) */
+
+/* --- 6. Estilos de Entrada de Datos --- */
+.form-section {
+    background-color: #FAFBFC; 
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+.form-section-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+}
+.form-section-header h4 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+.form-section-header p {
+    margin: 0.25rem 0 0 0;
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+}
+.form-section-body {
+    padding: 1.5rem;
+}
+.gasto-form-row {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px dashed var(--color-border);
+}
+.gasto-form-row:last-child {
+    border: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+.form-group-inline {
+    flex: 1;
+}
+.form-group-inline.flex-grow {
+    flex: 2;
+}
+.form-group-inline label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+.delete-row {
+    flex: 0;
+    text-align: left;
+}
+.delete-row button {
+    margin-top: 1.6rem;
+}
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+}
+.form-actions .btn {
+    width: auto;
+}
+
+/* --- 9. Estilos de Mensajes --- */
+.messages-container {
+    padding-bottom: 1.5rem;
+}
+.alert {
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+.alert-success {
+    background-color: var(--color-green);
+    color: var(--color-white);
+}
+.alert-error {
+    background-color: var(--color-red);
+    color: var(--color-white);
+}
+.alert-info {
+    background-color: var(--color-light-blue);
+    color: var(--color-dark-blue);
+}
+
+/* --- Estilos para Ocultar y Borrar --- */
+.hidden,
+[style*="display: none"] {
+    display: none !important;
+}
+.btn-delete-row {
+    background-color: var(--color-red);
+    color: var(--color-white);
+    border: none;
+    border-radius: 4px;
+    padding: 0.5rem 0.75rem; 
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+.btn-delete-row:hover {
+    background-color: #bf2600; 
+}

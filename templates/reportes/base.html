@@ -1,0 +1,74 @@
+<!-- templates/reportes/base.html (COMPLETO Y CORREGIDO) -->
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Panel de ACME TRANS{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    <!-- ¡LIBRERÍA DE GRÁFICOS! -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+</head>
+<body class="app-body">
+
+    <!-- --- Barra Lateral (Sidebar) --- -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <span class="logo">AT</span>
+            <h1>ACME TRANS</h1>
+        </div>
+        <nav class="sidebar-nav">
+            
+            {% if request.user.rol == "DIRECTOR" %}
+                <!-- --- Menú del Director --- -->
+                <a href="{% url 'dashboard' %}" class="nav-item {% if page_name == 'panel' %}active{% endif %}">Panel (Director)</a>
+                <a href="{% url 'reportes' %}" class="nav-item {% if page_name == 'reportes' %}active{% endif %}">Reportes</a>
+                <a href="{% url 'flota' %}" class="nav-item {% if page_name == 'flota' %}active{% endif %}">Ver Flota</a>
+                <a href="{% url 'configuracion' %}" class="nav-item {% if page_name == 'configuracion' %}active{% endif %}">Configuración</a>
+            
+            {% elif request.user.rol == "OPERACIONES" %}
+                <!-- --- Menú de Jefe de Operaciones --- -->
+                <a href="{% url 'flota_camion_list' %}" class="nav-item {% if page_name == 'flota_camiones' %}active{% endif %}">Gestionar Camiones</a>
+                <a href="{% url 'flota_chofer_list' %}" class="nav-item {% if page_name == 'flota_choferes' %}active{% endif %}">Gestionar Choferes</a>
+                   
+            {% elif request.user.rol == "ADMIN" %}
+                <!-- --- Menú del Admin de Centro --- -->
+                <a href="{% url 'entrada_datos' %}" class="nav-item {% if page_name == 'entrada_datos' %}active{% endif %}">Entrada de Datos</a>
+            {% endif %}
+            
+        </nav>
+        <div class="sidebar-footer">
+            <p>ACME TRANS v1.0</p>
+        </div>
+    </aside>
+
+    <!-- --- Contenido Principal --- -->
+    <div class="main-content">
+        <header class="topbar">
+            <div class="topbar-title">
+                {% block page_title %}Panel{% endblock %}
+            </div>
+            <div class="topbar-user">
+                <span>{{ request.user.rol }} - {{ request.user.username }}</span>
+                <a href="{% url 'logout' %}" class="btn-logout">Cerrar Sesión</a>
+            </div>
+        </header>
+        <main class="page-content">
+            {% if messages %}
+                <div class="messages-container">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+                </div>
+            {% endif %}
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+
+</body>
+</html>

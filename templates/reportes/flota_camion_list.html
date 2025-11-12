@@ -1,0 +1,65 @@
+{% extends "reportes/base.html" %}
+{% load static %}
+
+{% block title %}Gestión de Camiones - ACME TRANS{% endblock %}
+{% block page_title %}Gestión de Camiones{% endblock %}
+
+{% block content %}
+
+<div class="content-card">
+    <div class="form-actions" style="margin-top: 0; margin-bottom: 1.5rem;">
+        <h4>Flota de Camiones</h4>
+        <a href="{% url 'flota_camion_create' %}" class="btn btn-primary" style="width: auto;">+ Añadir Camión</a>
+    </div>
+    
+    <table class="report-table">
+        <thead>
+            <tr>
+                <th>Patente</th>
+                <th>Centro</th>
+                <th>Estado</th>
+                <th>Chofer Asignado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for camion in lista_camiones %}
+            <tr>
+                <td><strong>{{ camion.patente }}</strong></td>
+                <td>{{ camion.centro.nombre }}</td>
+                <td>
+                    {% if camion.estado == 'DISPONIBLE' %}
+                        <span class="status status-procesado">{{ camion.get_estado_display }}</span>
+                    {% elif camion.estado == 'EN_RUTA' %}
+                        <span class="status status-pendiente">{{ camion.get_estado_display }}</span>
+                    {% elif camion.estado == 'MANTENIMIENTO' %}
+                        <span class="status status-rechazado">{{ camion.get_estado_display }}</span>
+                    {% else %}
+                        <span class="status">{{ camion.get_estado_display }}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if camion.chofer_asignado %}
+                        {{ camion.chofer_asignado.nombre }}
+                    {% else %}
+                        <span style="color: var(--color-text-light);">Sin chofer</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'flota_camion_update' camion.pk %}" class="btn-link">Editar</a>
+                    <a href="{% url 'flota_camion_delete' camion.pk %}" class="btn-link" style="color: var(--color-red); margin-left: 10px;"
+                       onclick="return confirm('¿Estás seguro de que quieres eliminar la patente {{ camion.patente }}?');">
+                       Eliminar
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No hay camiones registrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

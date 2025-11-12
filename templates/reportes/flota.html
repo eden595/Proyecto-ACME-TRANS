@@ -1,0 +1,56 @@
+{% extends "reportes/base.html" %}
+
+{% block title %}Gestión de Flota - ACME TRANS{% endblock %}
+{% block page_title %}Gestión de Flota{% endblock %}
+
+{% block content %}
+
+<div class="content-card">
+    <h4>Estado Actual de la Flota</h4>
+    <p>Esta es una lista de todos los camiones registrados en el sistema y su estado actual.</p>
+    
+    <table class="report-table">
+        <thead>
+            <tr>
+                <th>Patente</th>
+                <th>Centro</th>
+                <th>Estado</th>
+                <th>Chofer Asignado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for camion in lista_camiones %}
+            <tr>
+                <td><strong>{{ camion.patente }}</strong></td>
+                <td>{{ camion.centro.nombre }}</td>
+                
+                <td>
+                    {% if camion.estado == 'DISPONIBLE' %}
+                        <span class="status status-procesado">{{ camion.get_estado_display }}</span>
+                    {% elif camion.estado == 'EN_RUTA' %}
+                        <span class="status status-pendiente">{{ camion.get_estado_display }}</span>
+                    {% elif camion.estado == 'MANTENIMIENTO' %}
+                        <span class="status status-rechazado">{{ camion.get_estado_display }}</span>
+                    {% else %}
+                        <span class="status">{{ camion.get_estado_display }}</span>
+                    {% endif %}
+                </td>
+                
+                <td>
+                    {% if camion.chofer_asignado %}
+                        {{ camion.chofer_asignado.nombre }}
+                    {% else %}
+                        <span style="color: var(--color-text-light);">Sin chofer</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">No hay camiones registrados en el sistema. (Añádelos desde el /admin/)</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,179 @@
+{% extends "reportes/base.html" %}
+{% load static %}
+
+{% block title %}Dashboard - ACME TRANS{% endblock %}
+{% block page_title %}Panel de Control{% endblock %}
+
+{% block content %}
+
+<div class="kpi-row">
+    <div class="kpi-card">
+        <h4>Camiones Totales</h4>
+        <div class="kpi-value">{{ total_camiones }}</div>
+    </div>
+    <div class="kpi-card">
+        <h4>Camiones en Ruta</h4>
+        <div class="kpi-value {% if camiones_en_ruta > 0 %}kpi-danger{% endif %}">{{ camiones_en_ruta }}</div>
+    </div>
+    <div class="kpi-card">
+        <h4>Reportes (Últ. 30 días)</h4>
+        <div class="kpi-value">{{ reportes_mes }}</div>
+    </div>
+    <div class="kpi-card">
+        <h4>Gastos (Últ. 30 días)</h4>
+        <div class="kpi-value">${{ total_gastos_mes }}</div>
+    </div>
+</div>
+
+<div class="content-row">
+
+    <div class="content-card-large">
+        <h4>Estado de la Flota (Total)</h4>
+        <div class="chart-container-pie">
+            <canvas id="flotaChart"></canvas>
+        </div>
+    </div>
+
+    <div class="content-card-small">
+        <h4>Gastos por Categoría (Últ. 30 días)</h4>
+        <div class="chart-container-pie">
+            <canvas id="gastosCategoriaChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="content-card-large" style="margin-bottom: 1.5rem;">
+    <h4>Gastos en el Tiempo (Últ. 30 días)</h4>
+    <div class="chart-container-line">
+        <canvas id="gastosLineaChart"></canvas>
+    </div>
+</div>
+
+<div class="content-card-large">
+    <h4>Actividad Reciente (Últimos Reportes)</h4>
+    <ul class="activity-list">
+        {% for reporte in actividad_reciente %}
+        <li>
+            <span class="activity-icon">R</span>
+            <div class="activity-text">
+                <strong>{{ reporte.centro.nombre }}</strong> envió un reporte 
+                {% if reporte.total_reporte %}
+                    por <strong>${{ reporte.total_reporte|floatformat:0 }}</strong>
+                {% else %}
+                    (sin gastos)
+                {% endif %}.
+                <span class="activity-time">{{ reporte.fecha|timesince }} atrás</span>
+            </div>
+        </li>
+        {% empty %}
+            <li>No hay actividad reciente.</li>
+        {% endfor %}
+    </ul>
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- ¡LA CORRECCIÓN VITAL! Usamos JSON.parse() para la sintaxis correcta. ---
+        // Tu editor de VS Code marcará estas líneas como "error",
+        // pero ES LA FORMA CORRECTA de pasar datos de Django a JS.
+        const flotaLabels = JSON.parse('{{ flota_labels|safe }}');
+        const flotaData = JSON.parse('{{ flota_data|safe }}');
+        
+        const gastosCatLabels = JSON.parse('{{ gastos_cat_labels|safe }}');
+        const gastosCatData = JSON.parse('{{ gastos_cat_data|safe }}');
+
+        const gastosLineLabels = JSON.parse('{{ gastos_line_labels|safe }}');
+        const gastosLineData = JSON.parse('{{ gastos_line_data|safe }}');
+        // --- FIN DE LA CORRECCIÓN VITAL ---
+
+        // Colores de nuestra paleta CSS
+        const colorPrimario = 'var(--color-primary)';
+        const colorAmarillo = 'var(--color-yellow)';
+        const colorRojo = 'var(--color-red)';
+        const colorVerde = 'var(--color-green)';
+        const colorGris = 'var(--color-text-light)';
+
+        // --- 1. Gráfico de Flota (Doughnut) ---
+        // (Añadimos un chequeo para que no falle si no hay datos)
+        if (flotaData.length > 0 && document.getElementById('flotaChart')) {
+            const ctxFlota = document.getElementById('flotaChart').getContext('2d');
+            new Chart(ctxFlota, {
+                type: 'doughnut',
+                data: {
+                    labels: flotaLabels,
+                    datasets: [{
+                        label: 'Estado de Flota',
+                        data: flotaData,
+                        backgroundColor: [colorVerde, colorAmarillo, colorRojo],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- 2. Gráfico de Gastos por Categoría (Pie) ---
+        // (Añadimos un chequeo para que no falle si no hay datos)
+        if (gastosCatData.length > 0 && document.getElementById('gastosCategoriaChart')) {
+            const ctxGastosCat = document.getElementById('gastosCategoriaChart').getContext('2d');
+            new Chart(ctxGastosCat, {
+                type: 'pie',
+                data: {
+                    labels: gastosCatLabels,
+                    datasets: [{
+                        label: 'Gastos por Categoría',
+                        data: gastosCatData,
+                        backgroundColor: [colorPrimario, colorAmarillo, colorRojo, colorVerde, colorGris],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- 3. Gráfico de Gastos en el Tiempo (Línea) ---
+        // (Añadimos un chequeo para que no falle si no hay datos)
+        if (gastosLineData.length > 0 && document.getElementById('gastosLineaChart')) {
+            const ctxGastosLinea = document.getElementById('gastosLineaChart').getContext('2d');
+            new Chart(ctxGastosLinea, {
+                type: 'line',
+                data: {
+                    labels: gastosLineLabels,
+                    datasets: [{
+                        label: 'Gastos Diarios',
+                        data: gastosLineData,
+                        borderColor: colorPrimario,
+                        backgroundColor: 'rgba(0, 82, 204, 0.1)',
+                        fill: true,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+    }); // <-- ¡AQUÍ ESTABA EL CIERRE CON EL PUNTO QUE ROMPÍA TODO! (Ahora está corregido)
+</script>
+
+{% endblock %}

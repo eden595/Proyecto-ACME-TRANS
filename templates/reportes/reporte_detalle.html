@@ -1,0 +1,59 @@
+{% extends "reportes/base.html" %}
+
+{% block title %}Detalle de Reporte - ACME TRANS{% endblock %}
+{% block page_title %}Detalle de Reporte #{{ reporte.id }}{% endblock %}
+
+{% block content %}
+
+<div class="content-row">
+    <div class="content-card-small">
+        <h4>Resumen del Reporte</h4>
+        <ul class="activity-list">
+            <li><div class="activity-text"><strong>Centro:</strong> {{ reporte.centro.nombre }}</div></li>
+            <li><div class="activity-text"><strong>Autor:</strong> {{ reporte.autor.username }}</div></li>
+            <li><div class="activity-text"><strong>Fecha:</strong> {{ reporte.fecha }}</div></li>
+            <li><div class="activity-text"><strong>Estado:</strong> {{ reporte.get_estado_display }}</div></li>
+            <li><div class="activity-text"><strong>Total Items:</strong> {{ total_items }}</div></li>
+            <li><div class="activity-text"><strong>Monto Total:</strong> ${{ monto_total|floatformat:0 }}</div></li>
+        </ul>
+        
+        <hr>
+        <h4>Datos Operacionales (Automáticos)</h4>
+        <ul class="activity-list">
+             <li><div class="activity-text"><strong>Disponibles:</strong> {{ reporte.recursos_disponibles }}</div></li>
+             <li><div class="activity-text"><strong>Comprometidos:</strong> {{ reporte.recursos_comprometidos }}</div></li>
+             <li><div class="activity-text"><strong>En Mantenimiento:</strong> {{ reporte.recursos_mantenimiento }}</div></li>
+        </ul>
+        
+        <hr>
+        <a href="{% url 'descargar_reporte' reporte.id %}" class="btn btn-secondary" style="width: 100%;">Descargar (CSV)</a>
+    </div>
+
+    <div class="content-card-large">
+        <h4>Gastos Registrados en este Reporte</h4>
+        <table class="report-table">
+            <thead>
+                <tr>
+                    <th>Categoría</th>
+                    <th>Descripción</th>
+                    <th>Monto</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for gasto in gastos %}
+                <tr>
+                    <td>{{ gasto.get_categoria_display }}</td>
+                    <td>{{ gasto.descripcion }}</td>
+                    <td>${{ gasto.monto|floatformat:0 }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3">Este reporte no tiene gastos registrados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

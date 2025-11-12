@@ -1,0 +1,151 @@
+{% extends "reportes/base.html" %}
+{% load static %}
+
+{% block title %}Entrada de Datos - ACME TRANS{% endblock %}
+{% block page_title %}Entrada de Reporte Diario (Centro: {{ request.user.centro.nombre }}){% endblock %}
+
+{% block content %}
+
+<div class="content-card" style="max-width: 900px; margin: 0 auto;">
+    
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        {% if gasto_formset.errors %}
+            <div class="form-errors" style="margin-bottom: 20px; padding: 20px; border-radius: 8px;">
+                <p><strong>Por favor, corrige los siguientes errores:</strong></p>
+                <ul style="margin-bottom: 0;">
+                    {% for error in gasto_formset.non_form_errors %}
+                        <li>{{ error|striptags }}</li>
+                    {% endfor %}
+                    {% for form in gasto_formset %}
+                        {% for field, error_list in form.errors.items %}
+                             {% for error in error_list %}
+                                <li>Gasto (Fila {{ forloop.counter }}): El campo "{{ field|title }}" tiene un error ({{ error|striptags }})</li>
+                             {% endfor %}
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        <div class="form-section">
+            <div class="form-section-header">
+                <h4>Paso 1: Estado de Flota (Automático)</h4>
+                <p>Este es el estado actual de tu flota. Se adjuntará al reporte.</p>
+            </div>
+            
+            <div class="form-section-body">
+                <div class="kpi-row" style="margin-bottom: 0;">
+                    <div class="kpi-card">
+                        <h4>Disponibles</h4>
+                        <div class="kpi-value" style="color: var(--color-green);">{{ recursos_disponibles }}</div>
+                    </div>
+                    <div class="kpi-card">
+                        <h4>En Ruta</h4>
+                        <div class="kpi-value" style="color: var(--color-yellow);">{{ recursos_comprometidos }}</div>
+                    </div>
+                    <div class="kpi-card">
+                        <h4>En Mantenimiento</h4>
+                        <div class="kpi-value" style="color: var(--color-red);">{{ recursos_mantenimiento }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-section">
+            <div class="form-section-header">
+                <h4>Paso 2: Registro de Gastos</h4>
+                <p>Añada los gastos incurridos durante el día (al menos 1).</p>
+            </div>
+            
+            <div class="form-section-body">
+                {{ gasto_formset.management_form }}
+                
+                <div id="gasto-formset-container">
+                    
+                    {% for form in gasto_formset %}
+                    <div class="gasto-form-row">
+                        <div class="form-group-inline">
+                            <label for="{{ form.categoria.id_for_label }}">{{ form.categoria.label }}</label>
+                            {{ form.categoria }}
+                        </div>
+                        <div class="form-group-inline flex-grow">
+                            <label for="{{ form.descripcion.id_for_label }}">{{ form.descripcion.label }}</label>
+                            {{ form.descripcion }}
+                        </div>
+                        <div class="form-group-inline">
+                            <label for="{{ form.monto.id_for_label }}">{{ form.monto.label }}</label>
+                            {{ form.monto }}
+                        </div>
+                        <div class="form-group-inline delete-row" style="display: none;">
+                            {% if form.can_delete %}{{ form.DELETE }}{% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                </div>
+                
+                <button type="button" id="add-gasto-form" class="btn btn-primary" style="width: auto; margin-top: 1rem;">+ Añadir otra fila de gasto</button>
+                
+            </div>
+        </div>
+
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary" style="width: auto;">Enviar Reporte Diario</button>
+        </div>
+
+    </form>
+</div>
+
+<div id="empty-gasto-form-template" style="display: none;">
+    <div class="gasto-form-row">
+        <div class="form-group-inline">
+            <label for="{{ gasto_formset.empty_form.categoria.id_for_label }}">{{ gasto_formset.empty_form.categoria.label }}</label>
+            {{ gasto_formset.empty_form.categoria }}
+        </div>
+        <div class="form-group-inline flex-grow">
+            <label for="{{ gasto_formset.empty_form.descripcion.id_for_label }}">{{ gasto_formset.empty_form.descripcion.label }}</label>
+            {{ gasto_formset.empty_form.descripcion }}
+        </div>
+        <div class="form-group-inline">
+            <label for="{{ gasto_formset.empty_form.monto.id_for_label }}">{{ gasto_formset.empty_form.monto.label }}</label>
+            {{ gasto_formset.empty_form.monto }}
+        </div>
+        <div class="form-group-inline delete-row">
+            <div style="display: none;">
+                {{ gasto_formset.empty_form.DELETE }}
+            </div>
+            <button type="button" class="btn btn-delete-row">Borrar</button>
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // ... (El script de JS para añadir y borrar filas sigue igual) ...
+    const addButton = document.getElementById('add-gasto-form');
+    const container = document.getElementById('gasto-formset-container');
+    const totalFormsInput = document.querySelector('input[name="form-TOTAL_FORMS"]');
+    const template = document.getElementById('empty-gasto-form-template');
+
+    addButton.addEventListener('click', function() {
+        let currentFormCount = parseInt(totalFormsInput.value, 10);
+        let newFormHtml = template.innerHTML;
+        newFormHtml = newFormHtml.replace(/__prefix__/g, currentFormCount);
+        const newFormElement = document.createElement('div');
+        newFormElement.innerHTML = newFormHtml;
+        container.appendChild(newFormElement.firstElementChild);
+        totalFormsInput.value = currentFormCount + 1;
+    });
+
+    container.addEventListener('click', function(e) {
+        if (e.target && e.target.classList.contains('btn-delete-row')) {
+            e.preventDefault();
+            const row = e.target.closest('.gasto-form-row');
+            const deleteInput = row.querySelector('input[type="checkbox"][name$="-DELETE"]');
+            if (deleteInput) { deleteInput.checked = true; }
+            row.style.display = 'none';
+        }
+    });
+});
+</script>
+{% endblock %}

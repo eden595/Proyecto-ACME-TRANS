@@ -1,0 +1,76 @@
+{% extends "reportes/base.html" %}
+{% load static %}
+
+{% block title %}Reportes - ACME TRANS{% endblock %}
+{% block page_title %}Gestor de Reportes{% endblock %}
+
+{% block content %}
+
+<div class="content-card">
+    <h4>Filtrar Reportes</h4>
+    
+    <form method="GET" action="{% url 'reportes' %}" class="filter-form">
+        
+        <div class="form-group">
+            <label>Centro</label>
+            <select name="centro" class="form-control">
+                <option value="">Todos los Centros</option>
+                {% for centro in todos_los_centros %}
+                    <option value="{{ centro.id }}" 
+                            {% if filtro_centro_id == centro.id|stringformat:"s" %}selected{% endif %}>
+                        {{ centro.nombre }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Fecha de Inicio</label>
+            <input type="date" name="fecha_inicio" class="form-control" 
+                   value="{{ filtro_fecha_inicio|default:'' }}">
+        </div>
+        <div class="form-group">
+            <label>Fecha de Fin</label>
+            <input type="date" name="fecha_fin" class="form-control" 
+                   value="{{ filtro_fecha_fin|default:'' }}">
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+        <a href="{% url 'reportes' %}" class="btn btn-primary" style="width: auto;">Limpiar</a>
+    </form>
+</div>
+<div class="content-card">
+    <h4>Reportes</h4>
+    <p>Lista de reportes diarios (filtrada).</p>
+    
+    <table class="report-table">
+        <thead>
+            <tr>
+                <th>Fecha de Generación</th>
+                <th>Centro</th>
+                <th>Autor</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for reporte in lista_reportes %}
+            <tr>
+                <td>{{ reporte.fecha|date:"d M, Y" }}</td>
+                <td>{{ reporte.centro.nombre }}</td>
+                <td>{{ reporte.autor.username }}</td>
+                
+                <td>
+                    <a href="{% url 'reporte_detalle' reporte.id %}" class="btn-link">Ver Detalles</a>
+                </td>
+                
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">No se encontraron reportes con esos filtros.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

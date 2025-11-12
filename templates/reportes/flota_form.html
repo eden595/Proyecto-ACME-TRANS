@@ -1,0 +1,53 @@
+{% extends "reportes/base.html" %}
+{% load static %}
+
+{% block title %}Formulario de Flota - ACME TRANS{% endblock %}
+{% block page_title %}Gestionar {{ object_type }}{% endblock %}
+
+{% block content %}
+
+<div class="content-card" style="max-width: 600px; margin: 0 auto;">
+    
+    <h4>
+        {% if form.instance.pk %}
+            Editar {{ object_type }}: {{ form.instance }}
+        {% else %}
+            Añadir Nuevo {{ object_type }}
+        {% endif %}
+    </h4>
+    
+    <form method="post" class="form-section-body" style="padding-top: 0;">
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+            <div class="form-errors">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        {% for field in form %}
+            <div class="form-group">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                    <div class="form-errors" style="margin-top: 5px; padding: 5px 10px;">
+                        {% for error in field.errors %}
+                            <p style="font-size: 0.8rem;">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <div class="form-actions">
+            <a href="{{ cancel_url }}" class="btn btn-secondary" style="width: auto;">Cancelar</a>
+            <button type="submit" class="btn btn-primary" style="width: auto;">
+                {% if form.instance.pk %}Actualizar{% else %}Guardar{% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
