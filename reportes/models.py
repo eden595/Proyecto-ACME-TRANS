@@ -10,10 +10,11 @@ class Centro(models.Model):
 
 class User(AbstractUser):
     
-    # --- ¡ROL CORREGIDO! ---
+    # --- ¡ROL CORREGIDO Y AÑADIDO! ---
     class Roles(models.TextChoices):
         DIRECTOR = 'DIRECTOR', 'Director General'
-        OPERACIONES = 'OPERACIONES', 'Jefe de Operaciones' # <-- Rol correcto
+        OPERACIONES = 'OPERACIONES', 'Jefe de Operaciones'
+        FINANZAS = 'FINANZAS', 'Área Financiera' # <-- ROL AÑADIDO
         ADMIN = 'ADMIN', 'Administrador Centro'
     
     rol = models.CharField(max_length=50, choices=Roles.choices, default=Roles.ADMIN)
@@ -51,7 +52,7 @@ class ReporteDiario(models.Model):
     autor = models.ForeignKey(User, on_delete=models.CASCADE)
     centro = models.ForeignKey(Centro, on_delete=models.CASCADE)
     fecha = models.DateTimeField(auto_now_add=True)
-    estado = models.CharField(max_length=50, choices=EstadoReporte.choices, default=EstadoReporte.PROCESADO) # Se guarda como Procesado
+    estado = models.CharField(max_length=50, choices=EstadoReporte.choices, default=EstadoReporte.PROCESADO)
     
     recursos_disponibles = models.IntegerField(default=0)
     recursos_comprometidos = models.IntegerField(default=0)

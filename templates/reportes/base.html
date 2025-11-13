@@ -1,5 +1,3 @@
-<!-- templates/reportes/base.html (COMPLETO Y CORREGIDO) -->
-
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
@@ -9,13 +7,11 @@
     <title>{% block title %}Panel de ACME TRANS{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     
-    <!-- ¡LIBRERÍA DE GRÁFICOS! -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
 </head>
 <body class="app-body">
 
-    <!-- --- Barra Lateral (Sidebar) --- -->
     <aside class="sidebar">
         <div class="sidebar-header">
             <span class="logo">AT</span>
@@ -24,19 +20,19 @@
         <nav class="sidebar-nav">
             
             {% if request.user.rol == "DIRECTOR" %}
-                <!-- --- Menú del Director --- -->
                 <a href="{% url 'dashboard' %}" class="nav-item {% if page_name == 'panel' %}active{% endif %}">Panel (Director)</a>
                 <a href="{% url 'reportes' %}" class="nav-item {% if page_name == 'reportes' %}active{% endif %}">Reportes</a>
                 <a href="{% url 'flota' %}" class="nav-item {% if page_name == 'flota' %}active{% endif %}">Ver Flota</a>
                 <a href="{% url 'configuracion' %}" class="nav-item {% if page_name == 'configuracion' %}active{% endif %}">Configuración</a>
             
             {% elif request.user.rol == "OPERACIONES" %}
-                <!-- --- Menú de Jefe de Operaciones --- -->
                 <a href="{% url 'flota_camion_list' %}" class="nav-item {% if page_name == 'flota_camiones' %}active{% endif %}">Gestionar Camiones</a>
                 <a href="{% url 'flota_chofer_list' %}" class="nav-item {% if page_name == 'flota_choferes' %}active{% endif %}">Gestionar Choferes</a>
-                   
+            
+            {% elif request.user.rol == "FINANZAS" %}
+                <a href="{% url 'finanzas_dashboard' %}" class="nav-item {% if page_name == 'finanzas' %}active{% endif %}">Análisis de Reportes</a>
+
             {% elif request.user.rol == "ADMIN" %}
-                <!-- --- Menú del Admin de Centro --- -->
                 <a href="{% url 'entrada_datos' %}" class="nav-item {% if page_name == 'entrada_datos' %}active{% endif %}">Entrada de Datos</a>
             {% endif %}
             
@@ -46,7 +42,6 @@
         </div>
     </aside>
 
-    <!-- --- Contenido Principal --- -->
     <div class="main-content">
         <header class="topbar">
             <div class="topbar-title">

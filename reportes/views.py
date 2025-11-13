@@ -1,4 +1,4 @@
-# reportes/views.py (COMPLETO Y CORREGIDO 100%)
+# reportes/views.py (COMPLETO Y CORREGIDO)
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
@@ -14,13 +14,13 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from datetime import timedelta
 import json
+from django.db.models.functions import TruncDate # <-- Import para agrupar por día
 # ---
 
 import csv
 from django.http import HttpResponse
 
 from .models import User, ReporteDiario, Gasto, Centro, Camion, Chofer
-# --- ¡AQUÍ ESTÁ LA CORRECCIÓN PRINCIPAL! ---
 from .forms import GastoForm, CamionForm, ChoferForm
 
 # --- VISTAS DE AUTENTICACIÓN ---
@@ -40,19 +40,21 @@ def login_view(request):
 def logout_view(request):
     logout(request); return redirect('login')
 
-# --- VISTA ROUTER (¡CORREGIDA!) ---
+# --- VISTA ROUTER (¡CORREGIDA CON FINANZAS!) ---
 @login_required
 def panel_view(request):
     if request.user.rol == User.Roles.DIRECTOR: 
         return redirect('dashboard')
-    elif request.user.rol == User.Roles.OPERACIONES: # <-- ¡ARREGLO 1!
+    elif request.user.rol == User.Roles.OPERACIONES:
         return redirect('flota_camion_list') 
+    elif request.user.rol == User.Roles.FINANZAS: # <-- AÑADIDO
+        return redirect('finanzas_dashboard')
     elif request.user.rol == User.Roles.ADMIN: 
         return redirect('entrada_datos')
     else: 
         return redirect('login')
 
-# --- VISTA DEL "DIRECTOR GENERAL" ---
+# --- VISTA DEL "DIRECTOR GENERAL" (¡CORREGIDA Y SIMPLIFICADA!) ---
 @login_required
 @never_cache
 def dashboard_view(request):
@@ -61,15 +63,17 @@ def dashboard_view(request):
         return redirect('panel')
 
     # --- 1. Lógica de KPIs (Últimos 30 días) ---
-    hoy = timezone.now().date()
+    hoy = timezone.now()
     hace_30_dias = hoy - timedelta(days=30)
 
-    gastos_mes = Gasto.objects.filter(
-        reporte__estado=ReporteDiario.EstadoReporte.PROCESADO,
-        reporte__fecha__date__gte=hace_30_dias
+    reportes_procesados_mes = ReporteDiario.objects.filter(
+        estado=ReporteDiario.EstadoReporte.PROCESADO,
+        fecha__gte=hace_30_dias
     )
+    
+    gastos_mes = Gasto.objects.filter(reporte__in=reportes_procesados_mes)
+    
     total_gastos_mes = gastos_mes.aggregate(Sum('monto'))['monto__sum'] or 0
-    reportes_mes = ReporteDiario.objects.filter(fecha__date__gte=hace_30_dias).count()
     
     total_camiones = Camion.objects.count()
     camiones_en_ruta = Camion.objects.filter(estado=Camion.EstadoCamion.EN_RUTA).count()
@@ -87,18 +91,16 @@ def dashboard_view(request):
     gastos_cat_labels = [Gasto.CategoriaGasto(g['categoria']).label for g in gastos_por_categoria]
     gastos_cat_data = [int(g['total'] or 0) for g in gastos_por_categoria]
 
-    # --- 4. Lógica Gráfico 3: Gastos en el Tiempo (Line) ---
-    gastos_diarios = gastos_mes.values('reporte__fecha__date') \
-                               .annotate(total_dia=Sum('monto')) \
-                               .order_by('reporte__fecha__date')
-    
-    gastos_line_labels = [g['reporte__fecha__date'].strftime('%d-%m') for g in gastos_diarios]
-    gastos_line_data = [int(g['total_dia'] or 0) for g in gastos_diarios]
+    # --- 4. Lógica "Gastos en el Tiempo" (ELIMINADA) ---
+    # (Se eliminó la consulta para este gráfico a petición del usuario)
 
     # --- 5. Lógica de "Actividad Reciente" ---
     actividad_reciente = ReporteDiario.objects.annotate(
         total_reporte=Sum('gastos__monto')
     ).order_by('-fecha')[:5] 
+
+    # ¡CORRECCIÓN DE LÓGICA! El .count() va al final.
+    reportes_mes = reportes_procesados_mes.count()
 
     context = {
         'total_camiones': total_camiones,
@@ -111,8 +113,8 @@ def dashboard_view(request):
         'flota_data': json.dumps(flota_data),
         'gastos_cat_labels': json.dumps(gastos_cat_labels),
         'gastos_cat_data': json.dumps(gastos_cat_data),
-        'gastos_line_labels': json.dumps(gastos_line_labels),
-        'gastos_line_data': json.dumps(gastos_line_data),
+        
+        # (Se eliminan 'gastos_line_labels' y 'gastos_line_data')
         
         'actividad_reciente': actividad_reciente,
         'page_name': 'panel', 
@@ -141,6 +143,38 @@ def reportes_generados_view(request):
         'filtro_fecha_inicio': filtro_fecha_inicio, 'filtro_fecha_fin': filtro_fecha_fin,
     }
     return render(request, 'reportes/reportes_generados.html', context)
+
+# --- ¡NUEVA VISTA PARA FINANZAS! ---
+@login_required
+@never_cache
+def finanzas_dashboard_view(request):
+    # Esta vista es para el rol FINANZAS
+    if request.user.rol not in [User.Roles.FINANZAS, User.Roles.DIRECTOR]:
+        messages.error(request, 'No tienes permisos para ver esta página.')
+        return redirect('panel')
+        
+    filtro_centro_id = request.GET.get('centro'); filtro_fecha_inicio = request.GET.get('fecha_inicio'); filtro_fecha_fin = request.GET.get('fecha_fin')
+    
+    # El rol Finanzas ve todos los reportes PROCESADOS
+    lista_reportes = ReporteDiario.objects.filter(estado=ReporteDiario.EstadoReporte.PROCESADO)
+    
+    if filtro_centro_id: lista_reportes = lista_reportes.filter(centro__id=filtro_centro_id)
+    if filtro_fecha_inicio: lista_reportes = lista_reportes.filter(fecha__gte=filtro_fecha_inicio)
+    if filtro_fecha_fin: lista_reportes = lista_reportes.filter(fecha__lte=filtro_fecha_fin)
+    
+    lista_reportes = lista_reportes.order_by('-fecha')
+    todos_los_centros = Centro.objects.all()
+    
+    context = {
+        'lista_reportes': lista_reportes, 
+        'page_name': 'finanzas', # <-- Importante para el menú
+        'todos_los_centros': todos_los_centros,
+        'filtro_centro_id': filtro_centro_id,
+        'filtro_fecha_inicio': filtro_fecha_inicio, 'filtro_fecha_fin': filtro_fecha_fin,
+    }
+    # Usamos un template nuevo que crearemos en el Paso 4
+    return render(request, 'reportes/finanzas_dashboard.html', context)
+# --- FIN DE NUEVA VISTA ---
 
 @login_required
 @never_cache
@@ -192,13 +226,16 @@ def entrada_datos_view(request):
     }
     return render(request, 'reportes/entrada_datos.html', context)
 
-# --- VISTA DE DETALLE ---
+# --- VISTA DE DETALLE (¡CORREGIDA CON FINANZAS!) ---
 @login_required
 @never_cache
 def reporte_detalle_view(request, reporte_id):
-    if request.user.rol != User.Roles.DIRECTOR:
+    # ¡CORRECCIÓN DE PERMISOS!
+    allowed_roles = [User.Roles.DIRECTOR, User.Roles.FINANZAS]
+    if request.user.rol not in allowed_roles:
         messages.error(request, 'No tienes permisos para ver esta página.')
         return redirect('panel')
+        
     reporte = get_object_or_404(ReporteDiario, id=reporte_id)
     gastos = reporte.gastos.all()
     monto_total = gastos.aggregate(Sum('monto'))['monto__sum'] or 0
@@ -209,12 +246,15 @@ def reporte_detalle_view(request, reporte_id):
     }
     return render(request, 'reportes/reporte_detalle.html', context)
 
-# --- VISTA DE DESCARGA ---
+# --- VISTA DE DESCARGA (¡CORREGIDA CON FINANZAS!) ---
 @login_required
 def descargar_reporte_csv(request, reporte_id):
-    if request.user.rol != User.Roles.DIRECTOR:
+    # ¡CORRECCIÓN DE PERMISOS!
+    allowed_roles = [User.Roles.DIRECTOR, User.Roles.FINANZAS]
+    if request.user.rol not in allowed_roles:
         messages.error(request, 'No tienes permisos para ver esta página.')
         return redirect('panel')
+        
     reporte = get_object_or_404(ReporteDiario, id=reporte_id)
     gastos = reporte.gastos.all() 
     response = HttpResponse(content_type='text/csv')
@@ -231,6 +271,7 @@ def descargar_reporte_csv(request, reporte_id):
 
 # ---------------------------------------------------------
 # VISTAS CRUD DE FLOTA (PARA OPERACIONES)
+# (Estas vistas se mantienen sin cambios)
 # ---------------------------------------------------------
 
 @login_required

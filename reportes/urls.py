@@ -15,10 +15,10 @@ urlpatterns = [
     path('configuracion/', views.configuracion_view, name='configuracion'),
     path('flota/', views.flota_view, name='flota'),
     
-    # URLs del "Jefe de Operaciones"
-    # ¡URL 'finanzas/' ELIMINADA!
+    # --- ¡NUEVA URL DE FINANZAS! ---
+    path('finanzas/', views.finanzas_dashboard_view, name='finanzas_dashboard'),
     
-    # --- CRUD de Flota ---
+    # --- CRUD de Flota (Operaciones) ---
     path('operaciones/flota/camiones/', views.flota_camion_list_view, name='flota_camion_list'),
     path('operaciones/flota/camiones/crear/', views.flota_camion_create_view, name='flota_camion_create'),
     path('operaciones/flota/camiones/editar/<str:pk>/', views.flota_camion_update_view, name='flota_camion_update'),

@@ -1,0 +1,15 @@
+# Entorno virtual (¡Muy importante!)
+env/
+
+# Archivos de cache de Python
+__pycache__/
+*.pyc
+
+# Base de datos local (si llegaste a crear la de sqlite)
+db.sqlite3
+
+# Archivos de configuración de VS Code
+.vscode/
+
+# Archivos de configuración del sistema operativo
+.DS_Store

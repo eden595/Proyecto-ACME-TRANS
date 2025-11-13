@@ -271,6 +271,7 @@ input:focus, select:focus {
 }
 .content-card-large {
     flex-grow: 1;
+    flex-basis: 0; /* Asegura que crezcan por igual */
 }
 .content-card-small {
     width: 320px;
@@ -380,6 +381,19 @@ input:focus, select:focus {
 }
 
 
+/* --- ¡ESTILOS CORREGIDOS PARA TAMAÑO DE GRÁFICOS! --- */
+.chart-container-pie {
+    position: relative;
+    /* Define una altura fija para los gráficos */
+    height: 300px; 
+    margin: 0 auto;
+}
+
+.chart-container-line {
+    position: relative;
+    /* Define una altura fija para el gráfico de línea */
+    height: 350px;
+}
 /* --- FIN NUEVOS ESTILOS --- */
 
 .activity-list {
