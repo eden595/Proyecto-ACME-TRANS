@@ -407,20 +407,25 @@ def flota_chofer_update_view(request, pk):
     }
     return render(request, 'reportes/flota_form.html', context)
 
+# En reportes/views.py
+
 @login_required
 def flota_chofer_delete_view(request, pk):
     if request.user.rol != User.Roles.OPERACIONES:
         messages.error(request, 'No tienes permisos para gestionar la flota.')
         return redirect('panel')
+    
     chofer = get_object_or_404(Chofer, pk=pk)
-    is_working = Camion.objects.filter(
-        chofer_asignado=chofer, 
-        estado=Camion.EstadoCamion.EN_RUTA
-    ).exists()
-    if is_working:
-        messages.error(request, f'No se puede eliminar a {chofer.nombre} porque está asignado a un camión que está "En Ruta".')
+    
+    # VERIFICACIÓN ROBUSTA
+    # Verificamos si el chofer tiene un camión asignado, independientemente del estado del camión
+    # (Es más seguro no borrar un chofer si tiene un camión asociado, aunque esté disponible)
+    if hasattr(chofer, 'camion') and chofer.camion is not None:
+        patente = chofer.camion.patente
+        messages.error(request, f'No se puede eliminar a {chofer.nombre} porque está asignado al camión {patente}. Primero desasígnalo.')
     else:
         nombre_chofer = chofer.nombre
         chofer.delete()
         messages.success(request, f'Chofer {nombre_chofer} eliminado con éxito.')
+    
     return redirect('flota_chofer_list')
