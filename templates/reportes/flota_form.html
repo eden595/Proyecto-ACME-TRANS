@@ -1,53 +1,93 @@
 {% extends "reportes/base.html" %}
 {% load static %}
 
-{% block title %}Formulario de Flota - ACME TRANS{% endblock %}
-{% block page_title %}Gestionar {{ object_type }}{% endblock %}
+{% block title %}Formulario - ACME TRANS{% endblock %}
+{% block page_title %}Gestionar Flota{% endblock %}
 
 {% block content %}
 
-<div class="content-card" style="max-width: 600px; margin: 0 auto;">
-    
-    <h4>
-        {% if form.instance.pk %}
-            Editar {{ object_type }}: {{ form.instance }}
-        {% else %}
-            Añadir Nuevo {{ object_type }}
-        {% endif %}
-    </h4>
-    
-    <form method="post" class="form-section-body" style="padding-top: 0;">
-        {% csrf_token %}
-        
-        {% if form.non_field_errors %}
-            <div class="form-errors">
-                {% for error in form.non_field_errors %}
-                    <p>{{ error }}</p>
-                {% endfor %}
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10">
+        <div class="card my-4 border-radius-xl">
+            
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                <div class="bg-gradient-info shadow-info border-radius-xl pt-4 pb-3">
+                    <h6 class="text-white text-capitalize ps-3 text-center">
+                        {% if form.instance.pk %}
+                            <i class="material-icons" style="vertical-align: middle;">edit</i> Editar {{ object_type }}
+                        {% else %}
+                            <i class="material-icons" style="vertical-align: middle;">add_circle</i> Registrar Nuevo {{ object_type }}
+                        {% endif %}
+                    </h6>
+                </div>
             </div>
-        {% endif %}
-        
-        {% for field in form %}
-            <div class="form-group">
-                {{ field.label_tag }}
-                {{ field }}
-                {% if field.errors %}
-                    <div class="form-errors" style="margin-top: 5px; padding: 5px 10px;">
-                        {% for error in field.errors %}
-                            <p style="font-size: 0.8rem;">{{ error }}</p>
+
+            <div class="card-body pb-2">
+                <form method="post" class="text-start">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger text-white text-sm" role="alert">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="row">
+                        {% for field in form %}
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label fw-bold text-xs text-uppercase text-secondary mb-0">{{ field.label }}</label>
+                            <div class="input-group input-group-outline">
+                                {{ field }}
+                            </div>
+                            {% if field.errors %}
+                                <small class="text-danger text-xs">{{ field.errors.0 }}</small>
+                            {% endif %}
+                            {% if field.help_text %}
+                                <small class="text-muted text-xs d-block">{{ field.help_text }}</small>
+                            {% endif %}
+                        </div>
                         {% endfor %}
                     </div>
-                {% endif %}
-            </div>
-        {% endfor %}
 
-        <div class="form-actions">
-            <a href="{{ cancel_url }}" class="btn btn-secondary" style="width: auto;">Cancelar</a>
-            <button type="submit" class="btn btn-primary" style="width: auto;">
-                {% if form.instance.pk %}Actualizar{% else %}Guardar{% endif %}
-            </button>
+                    <div class="row mt-3">
+                        <div class="col-6">
+                            <a href="{{ cancel_url }}" class="btn btn-outline-secondary w-100 border-radius-lg">
+                                Cancelar
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <button type="submit" class="btn bg-gradient-success w-100 border-radius-lg text-white">
+                                Guardar Cambios
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
         </div>
-    </form>
+    </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var inputs = document.querySelectorAll('input, select, textarea');
+        inputs.forEach(function(input) {
+            // Añadir clase base
+            input.classList.add('form-control');
+            
+            // Borde redondeado (Ovalado)
+            input.style.borderRadius = "0.5rem"; 
+            input.style.border = "1px solid #d2d6da";
+            input.style.padding = "8px 12px";
+            
+            // Si es checkbox, estilo diferente
+            if(input.type === 'checkbox') {
+                input.classList.remove('form-control');
+                input.classList.add('form-check-input');
+                input.style.border = "1px solid #d2d6da";
+            }
+        });
+    });
+</script>
 
 {% endblock %}

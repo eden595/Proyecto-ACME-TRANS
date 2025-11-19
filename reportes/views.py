@@ -9,6 +9,9 @@ from django.db.models import Sum, Avg, Count, Q
 from django.views.decorators.cache import never_cache
 from django.contrib import messages 
 from django.urls import reverse_lazy
+from django.db.models.functions import TruncDay
+from django.db.models import Sum
+import json
 
 # ¡NUEVAS IMPORTACIONES PARA CÁLCULOS DE FECHA Y JSON!
 from django.utils import timezone
@@ -66,24 +69,28 @@ def dashboard_view(request):
     hoy = timezone.now()
     hace_30_dias = hoy - timedelta(days=30)
 
+    # Reportes PROCESADOS del último mes
     reportes_procesados_mes = ReporteDiario.objects.filter(
         estado=ReporteDiario.EstadoReporte.PROCESADO,
         fecha__gte=hace_30_dias
     )
     
+    # Gastos asociados a esos reportes
     gastos_mes = Gasto.objects.filter(reporte__in=reportes_procesados_mes)
     
+    # Sumatoria total de gastos
     total_gastos_mes = gastos_mes.aggregate(Sum('monto'))['monto__sum'] or 0
     
+    # Conteo de Flota
     total_camiones = Camion.objects.count()
     camiones_en_ruta = Camion.objects.filter(estado=Camion.EstadoCamion.EN_RUTA).count()
 
-    # --- 2. Lógica Gráfico 1: Estado de Flota (Doughnut) ---
+    # --- 2. Gráfico 1: Estado de Flota (Doughnut) ---
     flota_data_counts = Camion.objects.values('estado').annotate(conteo=Count('estado'))
     flota_labels = [Camion.EstadoCamion(d['estado']).label for d in flota_data_counts]
     flota_data = [d['conteo'] for d in flota_data_counts]
 
-    # --- 3. Lógica Gráfico 2: Gastos del Mes por Categoría (Pie) ---
+    # --- 3. Gráfico 2: Gastos por Categoría (Pie) ---
     gastos_por_categoria = gastos_mes.values('categoria') \
                                      .annotate(total=Sum('monto')) \
                                      .order_by('-total')
@@ -91,15 +98,25 @@ def dashboard_view(request):
     gastos_cat_labels = [Gasto.CategoriaGasto(g['categoria']).label for g in gastos_por_categoria]
     gastos_cat_data = [int(g['total'] or 0) for g in gastos_por_categoria]
 
-    # --- 4. Lógica "Gastos en el Tiempo" (ELIMINADA) ---
-    # (Se eliminó la consulta para este gráfico a petición del usuario)
+    # --- 4. NUEVO: Gráfico de Línea (Evolución Diaria) ---
+    # Agrupamos gastos por día
+    gastos_por_dia = Gasto.objects.filter(
+        reporte__fecha__gte=hace_30_dias
+    ).annotate(
+        dia=TruncDay('reporte__fecha')
+    ).values('dia').annotate(
+        total=Sum('monto')
+    ).order_by('dia')
 
-    # --- 5. Lógica de "Actividad Reciente" ---
+    # Preparamos las listas para el gráfico
+    gastos_line_labels = [g['dia'].strftime('%d/%m') for g in gastos_por_dia]
+    gastos_line_data = [int(g['total']) for g in gastos_por_dia]
+
+    # --- 5. Actividad Reciente ---
     actividad_reciente = ReporteDiario.objects.annotate(
         total_reporte=Sum('gastos__monto')
     ).order_by('-fecha')[:5] 
 
-    # ¡CORRECCIÓN DE LÓGICA! El .count() va al final.
     reportes_mes = reportes_procesados_mes.count()
 
     context = {
@@ -108,20 +125,18 @@ def dashboard_view(request):
         'total_gastos_mes': f"{total_gastos_mes:,.0f}",
         'reportes_mes': reportes_mes,
         
-        # Datos JSON para el frontend
+        # JSONs para gráficos
         'flota_labels': json.dumps(flota_labels),
         'flota_data': json.dumps(flota_data),
         'gastos_cat_labels': json.dumps(gastos_cat_labels),
         'gastos_cat_data': json.dumps(gastos_cat_data),
-        
-        # (Se eliminan 'gastos_line_labels' y 'gastos_line_data')
+        'gastos_line_labels': json.dumps(gastos_line_labels), # <--- NUEVO
+        'gastos_line_data': json.dumps(gastos_line_data),     # <--- NUEVO
         
         'actividad_reciente': actividad_reciente,
         'page_name': 'panel', 
     }
     return render(request, 'reportes/dashboard.html', context)
-
-# --- VISTA DE REPORTES (PARA DIRECTOR) ---
 @login_required
 @never_cache
 def reportes_generados_view(request):

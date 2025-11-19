@@ -1,606 +1,220 @@
-/* static/css/style.css (COMPLETO Y CORREGIDO) */
+/* --- static/css/style.css (VERSIÓN FINAL CONSOLIDADA) --- */
 
-/* --- Configuración Global y Variables --- */
 :root {
-    --color-primary: #0052cc; 
-    --color-light-blue: #e6f0ff;
-    --color-dark-blue: #003e99;
-    --color-text: #172b4d;
-    --color-text-light: #5e6c84;
-    --color-bg: #f4f5f7;       
-    --color-white: #ffffff;
-    --color-border: #dfe1e6;
-    --color-green: #36b37e;
-    --color-red: #de350b;
-    --color-yellow: #ffab00;
+    --bs-blue: #0d6efd;
+    --bs-pink: #d63384;
+    --bs-red: #dc3545;
+    --bs-green: #198754;
+    --bs-dark: #344767;
 }
 
 body {
+    /* Fondo "plomo" (gris azulado) para mejor contraste */
+    background-color: #dfe3e8;
+    font-family: 'Roboto', sans-serif;
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    color: var(--color-text);
-    background-color: var(--color-bg);
+    color: #344767;
+    overflow-x: hidden;
 }
 
-a {
-    text-decoration: none;
-    color: var(--color-primary);
-}
-
-/* --- 1. Estilos de Login (login.html) --- */
-.login-body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-}
-.login-container {
-    padding: 20px;
-}
-.login-box {
-    background: var(--color-white);
-    padding: 2.5rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    width: 360px;
-    text-align: center;
-}
-.login-logo {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    width: 50px;
-    height: 50px;
-    background: var(--color-primary);
-    color: var(--color-white);
-    border-radius: 8px;
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin-bottom: 1rem;
-}
-.login-logo span {
-    transform: scale(0.9);
-}
-.login-box h2 {
-    margin: 0.5rem 0;
-}
-.login-box p {
-    color: var(--color-text-light);
-    margin-bottom: 2rem;
-}
-.login-form .form-group {
-    margin-bottom: 1.25rem;
-    text-align: left;
-}
-.login-form label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-    font-size: 0.875rem;
-}
-.login-form input[type="text"],
-.login-form input[type="password"] {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid var(--color-border);
-    border-radius: 4px;
-    box-sizing: border-box; 
-    background: #fafbfc;
-}
-.login-form input[type="text"]:focus,
-.login-form input[type="password"]:focus {
-    border-color: var(--color-primary);
-    background: var(--color-white);
-    outline: none;
-}
-.btn,
-.btn-primary {
-    display: block;
-    width: 100%;
-    padding: 0.875rem;
-    border: none;
-    border-radius: 4px;
-    background: var(--color-primary);
-    color: var(--color-white);
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-.btn-primary:hover {
-    background: var(--color-dark-blue);
-}
-.btn-secondary {
-    background-color: #444;
-    color: #fff;
-}
-.btn-secondary:hover {
-    background-color: #555;
-}
-.form-errors {
-    background: #ffebe6;
-    color: #bf2600;
-    border-radius: 4px;
-    padding: 10px;
-    margin-bottom: 1rem;
-    font-size: 0.875rem;
-    text-align: left;
-}
-.form-errors p {
-    margin: 0;
-}
-
-/* --- 2. Estilos de la App Principal (base.html) --- */
-.app-body {
-    display: flex;
+/* --- SIDEBAR (Barra Lateral) --- */
+.sidenav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
     height: 100vh;
-}
-.sidebar {
-    width: 240px;
-    background: var(--color-white);
-    border-right: 1px solid var(--color-border);
-    display: flex;
-    flex-direction: column;
-    flex-shrink: 0;
-}
-.sidebar-header {
-    display: flex;
-    align-items: center;
-    padding: 1.5rem;
-    border-bottom: 1px solid var(--color-border);
-}
-.sidebar-header .logo {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    width: 32px;
-    height: 32px;
-    background: var(--color-primary);
-    color: var(--color-white);
-    border-radius: 4px;
-    font-weight: bold;
-    flex-shrink: 0;
-}
-.sidebar-header h1 {
-    font-size: 1.25rem;
-    margin: 0 0 0 0.75rem;
-}
-.sidebar-nav {
-    padding: 1rem;
-    flex-grow: 1;
-}
-.nav-item {
-    display: block;
-    padding: 0.75rem 1rem;
-    border-radius: 4px;
-    color: var(--color-text-light);
-    font-weight: 500;
-    margin-bottom: 0.25rem;
-}
-.nav-item:hover {
-    background: var(--color-bg);
-}
-.nav-item.active {
-    background: var(--color-light-blue);
-    color: var(--color-primary);
-    font-weight: 600;
-}
-.sidebar-footer {
-    padding: 1.5rem;
-    border-top: 1px solid var(--color-border);
-    color: var(--color-text-light);
-    font-size: 0.8rem;
-}
-.main-content {
-    flex-grow: 1;
+    background-image: linear-gradient(195deg, #42424a 0%, #191919 100%);
+    z-index: 1050;
+    transition: all 0.2s ease-in-out;
+    border-radius: 0 0.75rem 0.75rem 0;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
 }
-.topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.25rem 2rem;
-    background: var(--color-white);
-    border-bottom: 1px solid var(--color-border);
-    flex-shrink: 0;
-}
-.topbar-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-}
-.topbar-user {
-    display: flex;
-    align-items: center;
-    color: var(--color-text-light);
-}
-.btn-logout {
-    margin-left: 1rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-}
-.page-content {
-    padding: 2rem;
+
+.sidenav-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* --- Estilos Generales de Formularios y Tarjetas --- */
-.form-control,
-select.form-control {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid var(--color-border);
-    border-radius: 4px;
-    box-sizing: border-box;
-    background: #fafbfc;
-    font-size: 0.9rem;
+.navbar-nav {
+    padding-left: 0;
+    list-style: none;
+    margin-top: 20px;
 }
-input:focus, select:focus {
-    border-color: var(--color-primary);
-    background: var(--color-white);
+
+.nav-item {
+    margin-bottom: 2px;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    margin: 2px 15px;
+    border-radius: 6px;
+    color: #ffffff !important;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-link.active {
+    background-image: linear-gradient(195deg, #EC407A 0%, #D81B60 100%);
+    box-shadow: 0 4px 20px 0 rgba(0,0,0,.14), 0 7px 10px -5px rgba(233,30,99,.4);
+}
+
+/* --- MAIN CONTENT --- */
+.main-content {
+    margin-left: 260px;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+/* --- TARJETAS (CARDS) --- */
+.card {
+    background-color: #ffffff;
+    
+    /* Borde sutil para definir el cuadro */
+    border: 1px solid rgba(0, 0, 0, 0.05); 
+    
+    /* Sombra difusa y profunda (Efecto 3D) */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    
+    /* Bordes muy ovalados */
+    border-radius: 1.25rem; 
+    margin-top: 30px;
+    overflow: visible;
+}
+
+.card-header {
+    background: transparent;
+    border: 0;
+    padding: 1rem;
+    position: relative;
+}
+
+/* Texto dentro de tarjetas */
+.card .text-end h4 {
+    color: #344767;
+    font-weight: 700;
+}
+.card .text-end p {
+    color: #7b809a;
+    font-weight: 400;
+}
+
+/* --- INPUTS Y FORMULARIOS --- */
+.form-control {
+    background-color: #f8f9fa; /* Fondo gris muy suave */
+    border: 1px solid #d2d6da;
+    border-radius: 0.5rem; /* Bordes redondeados */
+    padding: 8px 12px;
+}
+
+.form-control:focus {
+    background-color: #ffffff;
+    border-color: #e91e63; /* Rosa al enfocar */
+    box-shadow: 0 0 0 2px rgba(233, 30, 99, 0.25);
     outline: none;
 }
-.form-group {
-    margin-bottom: 1.25rem;
+
+/* --- ALERTAS --- */
+.alert {
+    border: 0;
+    color: #ffffff;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 20px 0 rgba(0,0,0,.14), 0 7px 10px -5px rgba(64,64,64,.4);
 }
-.form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-    font-size: 0.875rem;
-}
-.content-card,
-.content-card-large,
-.content-card-small {
-    background: var(--color-white);
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-}
-.content-card h4,
-.content-card-large h4,
-.content-card-small h4 {
-    margin-top: 0;
-    margin-bottom: 1rem;
-    font-size: 1.1rem;
-}
-.content-row {
+.alert-success { background-image: linear-gradient(195deg, #66BB6A 0%, #43A047 100%); }
+.alert-danger, .alert-error { background-image: linear-gradient(195deg, #EF5350 0%, #E53935 100%); }
+.alert-warning { background-image: linear-gradient(195deg, #FFA726 0%, #FB8C00 100%); }
+.alert-info { background-image: linear-gradient(195deg, #49a3f1 0%, #1A73E8 100%); }
+.alert .btn-close { filter: brightness(0) invert(1); opacity: 0.8; }
+
+/* --- ICONOS --- */
+
+/* 1. Icono Base (Para KPIs grandes) */
+.icon-shape {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
     display: flex;
-    gap: 1.5rem;
-}
-.content-card-large {
-    flex-grow: 1;
-    flex-basis: 0; /* Asegura que crezcan por igual */
-}
-.content-card-small {
-    width: 320px;
-    flex-shrink: 0;
-}
-
-/* --- 3. Estilos del Dashboard (dashboard.html) --- */
-.kpi-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-}
-.kpi-card {
-    background: var(--color-white);
-    padding: 1.5rem;
-    border-radius: 8px;
-}
-.kpi-card h4 {
-    margin: 0 0 0.5rem 0;
-    font-size: 0.9rem;
-    color: var(--color-text-light);
-    font-weight: 500;
-}
-.kpi-value {
-    font-size: 2rem;
-    font-weight: 600;
-}
-.kpi-value.kpi-danger {
-    color: var(--color-red);
-}
-
-/* --- ¡NUEVOS ESTILOS PARA GRÁFICOS! --- */
-.chart-container {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-}
-
-/* Gráfico de Torta (Doughnut) */
-@property --p_disponible {
-  syntax: '<integer>';
-  inherits: false;
-  initial-value: 0;
-}
-@property --p_enruta {
-  syntax: '<integer>';
-  inherits: false;
-  initial-value: 0;
-}
-@property --p_mantenimiento {
-  syntax: '<integer>';
-  inherits: false;
-  initial-value: 0;
-}
-.pie-chart {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    /* Calculamos el total y los porcentajes para el gradiente.
-       '1turn' es un círculo completo.
-    */
-    --total: calc(var(--p_disponible) + var(--p_enruta) + var(--p_mantenimiento));
-    --pct_disponible: calc(var(--p_disponible) / var(--total));
-    --pct_enruta: calc(var(--p_enruta) / var(--total));
-    
-    --deg_disponible: calc(var(--pct_disponible) * 1turn);
-    --deg_enruta: calc(var(--pct_enruta) * 1turn);
-    
-    background: conic-gradient(
-        var(--color-green) 0, var(--deg_disponible),
-        var(--color-yellow) 0, calc(var(--deg_disponible) + var(--deg_enruta)),
-        var(--color-red) 0, 1turn
-    );
-    flex-shrink: 0;
-}
-
-/* Leyenda del Gráfico */
-.pie-legend {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    flex-grow: 1;
-}
-.pie-legend li {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0.75rem;
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-.legend-item {
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    border-radius: 2px;
-    margin-right: 0.75rem;
-}
-
-/* Leyenda para gastos (vertical) */
-.pie-legend.vertical li {
-    justify-content: space-between;
-}
-.pie-legend .legend-value {
-    font-weight: 600;
-    color: var(--color-text);
-}
-
-
-/* --- ¡ESTILOS CORREGIDOS PARA TAMAÑO DE GRÁFICOS! --- */
-.chart-container-pie {
-    position: relative;
-    /* Define una altura fija para los gráficos */
-    height: 300px; 
-    margin: 0 auto;
-}
-
-.chart-container-line {
-    position: relative;
-    /* Define una altura fija para el gráfico de línea */
-    height: 350px;
-}
-/* --- FIN NUEVOS ESTILOS --- */
-
-.activity-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-.activity-list li {
-    display: flex;
-    align-items: center;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid var(--color-bg);
-}
-.activity-list li:last-child {
-    border: none;
-}
-.activity-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: var(--color-light-blue);
-    color: var(--color-dark-blue);
-    display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-weight: 600;
-    font-size: 0.875rem;
-    margin-right: 0.75rem;
+    color: #fff;
+    box-shadow: 0 4px 20px 0 rgba(0,0,0,.14), 0 7px 10px -5px rgba(64,64,64,.4);
 }
-.activity-text strong {
-    color: var(--color-text);
-}
-.activity-time {
-    display: block;
-    font-size: 0.8rem;
-    color: var(--color-text-light);
-    margin-top: 2px;
+.icon-shape i { font-size: 28px; }
+
+/* 2. Posicionamiento solo si es absoluto (KPIs) */
+.card-header .position-absolute.icon-shape {
+    top: -20px;
+    left: 20px;
 }
 
-/* --- 4. Estilos de Reportes (reportes_generados.html) --- */
-.filter-form {
+/* 3. Iconos Pequeños (Para Tablas) */
+.icon-table, .icon-xs {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50% !important; /* Redondos */
     display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    gap: 1rem;
-}
-.filter-form .form-group {
-    flex-grow: 1;
-    margin-bottom: 0;
-}
-.filter-form .btn {
-    flex-shrink: 0;
-    width: auto;
-    padding-top: 0.75rem;
-    padding-bottom: 0.75rem;
-    box-sizing: border-box; 
-}
-.report-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1rem;
-}
-.report-table th,
-.report-table td {
-    padding: 0.875rem 1rem;
-    text-align: left;
-    border-bottom: 1px solid var(--color-border);
-}
-.report-table th {
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    color: var(--color-text-light);
-    font-weight: 600;
-}
-.report-table td {
-    font-size: 0.9rem;
-}
-.btn-link {
-    font-weight: 600;
-}
-.status {
-    font-size: 0.8rem;
-    font-weight: bold;
-    padding: 4px 8px;
-    border-radius: 4px;
-    display: inline-block;
-    text-transform: uppercase;
-}
-.status-procesado { 
-    background-color: #e3fcef;
-    color: #065535;
-}
-.status-pendiente { /* Para camiones 'En Ruta' */
-    background-color: #fffae6;
-    color: #996f00;
-}
-.status-rechazado { /* Para camiones 'En Mantenimiento' */
-    background-color: #ffebe6;
-    color: #bf2600;
-}
-
-/* --- 5. Estilos de Configuración (configuracion.html) --- */
-/* (Estilos de 'switch' eliminados) */
-
-/* --- 6. Estilos de Entrada de Datos --- */
-.form-section {
-    background-color: #FAFBFC; 
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    margin-bottom: 2rem;
-}
-.form-section-header {
-    padding: 1.5rem;
-    border-bottom: 1px solid var(--color-border);
-}
-.form-section-header h4 {
-    margin: 0;
-    font-size: 1.1rem;
-}
-.form-section-header p {
-    margin: 0.25rem 0 0 0;
-    font-size: 0.9rem;
-    color: var(--color-text-light);
-}
-.form-section-body {
-    padding: 1.5rem;
-}
-.gasto-form-row {
-    display: flex;
-    gap: 1rem;
-    align-items: flex-end;
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px dashed var(--color-border);
-}
-.gasto-form-row:last-child {
-    border: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
-}
-.form-group-inline {
-    flex: 1;
-}
-.form-group-inline.flex-grow {
-    flex: 2;
-}
-.form-group-inline label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-    font-size: 0.875rem;
-}
-.delete-row {
-    flex: 0;
-    text-align: left;
-}
-.delete-row button {
-    margin-top: 1.6rem;
-}
-.form-actions {
-    display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-top: 1.5rem;
+    justify-content: center;
+    box-shadow: none !important;
 }
-.form-actions .btn {
-    width: auto;
-}
-
-/* --- 9. Estilos de Mensajes --- */
-.messages-container {
-    padding-bottom: 1.5rem;
-}
-.alert {
-    padding: 1rem 1.5rem;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-.alert-success {
-    background-color: var(--color-green);
-    color: var(--color-white);
-}
-.alert-error {
-    background-color: var(--color-red);
-    color: var(--color-white);
-}
-.alert-info {
-    background-color: var(--color-light-blue);
-    color: var(--color-dark-blue);
+.icon-table i, .icon-xs i {
+    font-size: 16px !important;
+    margin: 0 !important;
 }
 
-/* --- Estilos para Ocultar y Borrar --- */
-.hidden,
-[style*="display: none"] {
-    display: none !important;
+/* --- GRADIENTES DE FONDO --- */
+.bg-gradient-dark { background: linear-gradient(195deg, #42424a 0%, #191919 100%); }
+.bg-gradient-primary { background: linear-gradient(195deg, #EC407A 0%, #D81B60 100%); }
+.bg-gradient-success { background: linear-gradient(195deg, #66BB6A 0%, #43A047 100%); }
+.bg-gradient-info { background: linear-gradient(195deg, #49a3f1 0%, #1A73E8 100%); }
+.bg-gradient-warning { background: linear-gradient(195deg, #FFA726 0%, #FB8C00 100%); }
+.bg-gradient-danger { background: linear-gradient(195deg, #EF5350 0%, #E53935 100%); }
+.bg-gradient-light { background: linear-gradient(195deg, #ebeff4 0%, #ced4da 100%); }
+
+/* --- SOMBRAS DE GRADIENTES --- */
+.shadow-dark { box-shadow: 0 4px 20px 0 rgba(0,0,0,.14), 0 7px 10px -5px rgba(64,64,64,.4) !important; }
+.shadow-primary { box-shadow: 0 4px 20px 0 rgba(0,0,0,.14), 0 7px 10px -5px rgba(233,30,99,.4) !important; }
+.shadow-success { box-shadow: 0 4px 20px 0 rgba(0,0,0,.14), 0 7px 10px -5px rgba(76,175,80,.4) !important; }
+.shadow-info { box-shadow: 0 4px 20px 0 rgba(0,0,0,.14), 0 7px 10px -5px rgba(0,188,212,.4) !important; }
+.shadow-warning { box-shadow: 0 4px 20px 0 rgba(0,0,0,.14), 0 7px 10px -5px rgba(255,152,0,.4) !important; }
+.shadow-danger { box-shadow: 0 4px 20px 0 rgba(0,0,0,.14), 0 7px 10px -5px rgba(244,67,54,.4) !important; }
+
+/* --- UTILIDADES Y ARREGLOS --- */
+.border-radius-xl { border-radius: 1.25rem !important; }
+.border-radius-lg { border-radius: 0.75rem !important; }
+
+/* Forzar texto blanco en botones degradados */
+.btn.bg-gradient-primary,
+.btn.bg-gradient-dark,
+.btn.bg-gradient-success,
+.btn.bg-gradient-info,
+.btn.bg-gradient-warning,
+.btn.bg-gradient-danger,
+button.bg-gradient-dark {
+    color: #ffffff !important;
 }
-.btn-delete-row {
-    background-color: var(--color-red);
-    color: var(--color-white);
-    border: none;
-    border-radius: 4px;
-    padding: 0.5rem 0.75rem; 
-    font-size: 0.8rem;
-    font-weight: 600;
-    cursor: pointer;
+
+/* Tablas compactas */
+.table td, .table th {
+    white-space: nowrap;
 }
-.btn-delete-row:hover {
-    background-color: #bf2600; 
+
+.navbar-main .breadcrumb-item, .navbar-main h6 { color: #344767 !important; }
+.nav-link-user { color: #344767 !important; font-weight: 600; display: flex; align-items: center; }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .sidenav { transform: translateX(-100%); }
+    .main-content { margin-left: 0; }
 }

@@ -1,151 +1,224 @@
 {% extends "reportes/base.html" %}
 {% load static %}
 
-{% block title %}Entrada de Datos - ACME TRANS{% endblock %}
-{% block page_title %}Entrada de Reporte Diario (Centro: {{ request.user.centro.nombre }}){% endblock %}
+{% block title %}Ingreso de Datos - ACME TRANS{% endblock %}
+{% block page_title %}Ingreso de Reporte Diario{% endblock %}
 
 {% block content %}
 
-<div class="content-card" style="max-width: 900px; margin: 0 auto;">
-    
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        
-        {% if gasto_formset.errors %}
-            <div class="form-errors" style="margin-bottom: 20px; padding: 20px; border-radius: 8px;">
-                <p><strong>Por favor, corrige los siguientes errores:</strong></p>
-                <ul style="margin-bottom: 0;">
-                    {% for error in gasto_formset.non_form_errors %}
-                        <li>{{ error|striptags }}</li>
-                    {% endfor %}
-                    {% for form in gasto_formset %}
-                        {% for field, error_list in form.errors.items %}
-                             {% for error in error_list %}
-                                <li>Gasto (Fila {{ forloop.counter }}): El campo "{{ field|title }}" tiene un error ({{ error|striptags }})</li>
-                             {% endfor %}
+<form method="post" enctype="multipart/form-data" id="reporteForm">
+    {% csrf_token %}
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <h6 class="mb-3 font-weight-bold text-dark ps-1">Paso 1: Estado Actual de la Flota</h6>
+        </div>
+
+        <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
+            <div class="card border-radius-xl">
+                <div class="card-header p-3 pt-2">
+                    <div class="icon-shape bg-gradient-success shadow-success text-center border-radius-xl mt-n4 position-absolute">
+                        <i class="material-icons opacity-10">check_circle</i>
+                    </div>
+                    <div class="text-end pt-1">
+                        <p class="text-sm mb-0 text-capitalize">Disponibles</p>
+                        <h4 class="mb-0 text-dark">{{ recursos_disponibles }}</h4>
+                    </div>
+                </div>
+                <div class="card-footer p-3">
+                    <p class="mb-0 text-sm"><span class="text-success font-weight-bolder">Listo</span> para asignar</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
+            <div class="card border-radius-xl">
+                <div class="card-header p-3 pt-2">
+                    <div class="icon-shape bg-gradient-warning shadow-warning text-center border-radius-xl mt-n4 position-absolute">
+                        <i class="material-icons opacity-10">local_shipping</i>
+                    </div>
+                    <div class="text-end pt-1">
+                        <p class="text-sm mb-0 text-capitalize">En Ruta</p>
+                        <h4 class="mb-0 text-dark">{{ recursos_comprometidos }}</h4>
+                    </div>
+                </div>
+                <div class="card-footer p-3">
+                    <p class="mb-0 text-sm"><span class="text-warning font-weight-bolder">Trabajando</span> actualmente</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-sm-6 mb-4">
+            <div class="card border-radius-xl">
+                <div class="card-header p-3 pt-2">
+                    <div class="icon-shape bg-gradient-danger shadow-danger text-center border-radius-xl mt-n4 position-absolute">
+                        <i class="material-icons opacity-10">build</i>
+                    </div>
+                    <div class="text-end pt-1">
+                        <p class="text-sm mb-0 text-capitalize">Mantenimiento</p>
+                        <h4 class="mb-0 text-dark">{{ recursos_mantenimiento }}</h4>
+                    </div>
+                </div>
+                <div class="card-footer p-3">
+                    <p class="mb-0 text-sm"><span class="text-danger font-weight-bolder">No disponible</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            
+            {% if gasto_formset.errors %}
+                <div class="alert alert-danger text-white mb-4 border-radius-lg" role="alert">
+                    <strong><i class="material-icons" style="vertical-align: middle;">error</i> Atención:</strong> Por favor corrige los errores marcados abajo.
+                </div>
+            {% endif %}
+
+            <div class="card my-4 border-radius-xl">
+                
+                <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                    <div class="bg-gradient-primary shadow-primary border-radius-xl pt-4 pb-3 d-flex justify-content-between align-items-center px-3">
+                        <h6 class="text-white text-capitalize ps-3 mb-0">Paso 2: Registro de Gastos del Día</h6>
+                        <span class="badge bg-white text-primary me-3 border-radius-lg">Centro: {{ request.user.centro.nombre }}</span>
+                    </div>
+                </div>
+
+                <div class="card-body px-4 pb-2">
+                    <p class="text-sm mb-4 ms-1">Ingrese los gastos operativos asociados a la jornada. Puede agregar múltiples líneas.</p>
+                    
+                    {{ gasto_formset.management_form }}
+                    
+                    <div id="gasto-formset-container">
+                        {% for form in gasto_formset %}
+                        <div class="gasto-row row align-items-center mb-3 pb-3 border-bottom">
+                            {% if form.non_field_errors %}
+                                <div class="col-12 text-danger text-xs mb-2">{{ form.non_field_errors }}</div>
+                            {% endif %}
+
+                            <div class="col-md-3 mb-3 mb-md-0">
+                                <label class="form-label text-xs font-weight-bold text-uppercase text-secondary">Categoría</label>
+                                {{ form.categoria }}
+                                {% if form.categoria.errors %}<small class="text-danger text-xs">{{ form.categoria.errors.0 }}</small>{% endif %}
+                            </div>
+
+                            <div class="col-md-5 mb-3 mb-md-0">
+                                <label class="form-label text-xs font-weight-bold text-uppercase text-secondary">Descripción</label>
+                                {{ form.descripcion }}
+                                {% if form.descripcion.errors %}<small class="text-danger text-xs">{{ form.descripcion.errors.0 }}</small>{% endif %}
+                            </div>
+
+                            <div class="col-md-3 mb-3 mb-md-0">
+                                <label class="form-label text-xs font-weight-bold text-uppercase text-secondary">Monto ($)</label>
+                                <div class="input-group input-group-outline">
+                                    {{ form.monto }}
+                                </div>
+                                {% if form.monto.errors %}<small class="text-danger text-xs">{{ form.monto.errors.0 }}</small>{% endif %}
+                            </div>
+
+                            <div class="col-md-1 text-center">
+                                <div class="d-none">{{ form.DELETE }}</div>
+                                {% if form.instance.pk or gasto_formset.can_delete %}
+                                    <button type="button" class="btn btn-link text-danger text-gradient px-3 mb-0 btn-delete-row">
+                                        <i class="material-icons text-lg">delete</i>
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
                         {% endfor %}
-                    {% endfor %}
-                </ul>
-            </div>
-        {% endif %}
-        <div class="form-section">
-            <div class="form-section-header">
-                <h4>Paso 1: Estado de Flota (Camiones)</h4>
-                <p>Este es el estado actual de tu flota. Se adjuntará al reporte.</p>
-            </div>
-            
-            <div class="form-section-body">
-                <div class="kpi-row" style="margin-bottom: 0;">
-                    <div class="kpi-card">
-                        <h4>Disponibles</h4>
-                        <div class="kpi-value" style="color: var(--color-green);">{{ recursos_disponibles }}</div>
                     </div>
-                    <div class="kpi-card">
-                        <h4>En Ruta</h4>
-                        <div class="kpi-value" style="color: var(--color-yellow);">{{ recursos_comprometidos }}</div>
-                    </div>
-                    <div class="kpi-card">
-                        <h4>En Mantenimiento</h4>
-                        <div class="kpi-value" style="color: var(--color-red);">{{ recursos_mantenimiento }}</div>
+
+                    <div class="row mt-4 mb-3">
+                        <div class="col-md-6">
+                            <button type="button" id="add-gasto-form" class="btn btn-outline-primary w-100 w-md-auto border-radius-lg">
+                                <i class="material-icons text-sm me-1">add</i> Añadir otra fila
+                            </button>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <button type="submit" class="btn bg-gradient-primary w-100 w-md-auto border-radius-lg text-white">
+                                <i class="material-icons text-sm me-1">send</i> Enviar Reporte
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="form-section">
-            <div class="form-section-header">
-                <h4>Paso 2: Registro de Gastos</h4>
-                <p>Añada los gastos incurridos durante el día (al menos 1).</p>
-            </div>
-            
-            <div class="form-section-body">
-                {{ gasto_formset.management_form }}
-                
-                <div id="gasto-formset-container">
-                    
-                    {% for form in gasto_formset %}
-                    <div class="gasto-form-row">
-                        <div class="form-group-inline">
-                            <label for="{{ form.categoria.id_for_label }}">{{ form.categoria.label }}</label>
-                            {{ form.categoria }}
-                        </div>
-                        <div class="form-group-inline flex-grow">
-                            <label for="{{ form.descripcion.id_for_label }}">{{ form.descripcion.label }}</label>
-                            {{ form.descripcion }}
-                        </div>
-                        <div class="form-group-inline">
-                            <label for="{{ form.monto.id_for_label }}">{{ form.monto.label }}</label>
-                            {{ form.monto }}
-                        </div>
-                        <div class="form-group-inline delete-row" style="display: none;">
-                            {% if form.can_delete %}{{ form.DELETE }}{% endif %}
-                        </div>
-                    </div>
-                    {% endfor %}
-                    
-                </div>
-                
-                <button type="button" id="add-gasto-form" class="btn btn-primary" style="width: auto; margin-top: 1rem;">+ Añadir otra fila de gasto</button>
-                
-            </div>
-        </div>
-
-
-        <div class="form-actions">
-            <button type="submit" class="btn btn-primary" style="width: auto;">Enviar Reporte Diario</button>
-        </div>
-
-    </form>
-</div>
+    </div>
+</form>
 
 <div id="empty-gasto-form-template" style="display: none;">
-    <div class="gasto-form-row">
-        <div class="form-group-inline">
-            <label for="{{ gasto_formset.empty_form.categoria.id_for_label }}">{{ gasto_formset.empty_form.categoria.label }}</label>
+    <div class="gasto-row row align-items-center mb-3 pb-3 border-bottom">
+        <div class="col-md-3 mb-3 mb-md-0">
+            <label class="form-label text-xs font-weight-bold text-uppercase text-secondary">Categoría</label>
             {{ gasto_formset.empty_form.categoria }}
         </div>
-        <div class="form-group-inline flex-grow">
-            <label for="{{ gasto_formset.empty_form.descripcion.id_for_label }}">{{ gasto_formset.empty_form.descripcion.label }}</label>
+        <div class="col-md-5 mb-3 mb-md-0">
+            <label class="form-label text-xs font-weight-bold text-uppercase text-secondary">Descripción</label>
             {{ gasto_formset.empty_form.descripcion }}
         </div>
-        <div class="form-group-inline">
-            <label for="{{ gasto_formset.empty_form.monto.id_for_label }}">{{ gasto_formset.empty_form.monto.label }}</label>
-            {{ gasto_formset.empty_form.monto }}
-        </div>
-        <div class="form-group-inline delete-row">
-            <div style="display: none;">
-                {{ gasto_formset.empty_form.DELETE }}
+        <div class="col-md-3 mb-3 mb-md-0">
+            <label class="form-label text-xs font-weight-bold text-uppercase text-secondary">Monto ($)</label>
+            <div class="input-group input-group-outline">
+                {{ gasto_formset.empty_form.monto }}
             </div>
-            <button type="button" class="btn btn-delete-row">Borrar</button>
+        </div>
+        <div class="col-md-1 text-center">
+            <div class="d-none">{{ gasto_formset.empty_form.DELETE }}</div>
+            <button type="button" class="btn btn-link text-danger text-gradient px-3 mb-0 btn-delete-row">
+                <i class="material-icons text-lg">delete</i>
+            </button>
         </div>
     </div>
 </div>
+
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // ... (El script de JS para añadir y borrar filas sigue igual) ...
-    const addButton = document.getElementById('add-gasto-form');
-    const container = document.getElementById('gasto-formset-container');
-    const totalFormsInput = document.querySelector('input[name="form-TOTAL_FORMS"]');
-    const template = document.getElementById('empty-gasto-form-template');
+    document.addEventListener('DOMContentLoaded', function() {
+        const addButton = document.getElementById('add-gasto-form');
+        const container = document.getElementById('gasto-formset-container');
+        const totalFormsInput = document.querySelector('input[name="form-TOTAL_FORMS"]');
+        const template = document.getElementById('empty-gasto-form-template');
 
-    addButton.addEventListener('click', function() {
-        let currentFormCount = parseInt(totalFormsInput.value, 10);
-        let newFormHtml = template.innerHTML;
-        newFormHtml = newFormHtml.replace(/__prefix__/g, currentFormCount);
-        const newFormElement = document.createElement('div');
-        newFormElement.innerHTML = newFormHtml;
-        container.appendChild(newFormElement.firstElementChild);
-        totalFormsInput.value = currentFormCount + 1;
-    });
-
-    container.addEventListener('click', function(e) {
-        if (e.target && e.target.classList.contains('btn-delete-row')) {
-            e.preventDefault();
-            const row = e.target.closest('.gasto-form-row');
-            const deleteInput = row.querySelector('input[type="checkbox"][name$="-DELETE"]');
-            if (deleteInput) { deleteInput.checked = true; }
-            row.style.display = 'none';
+        // Función para añadir estilos a los inputs nuevos
+        function styleInput(input) {
+            input.classList.add('form-control');
+            input.style.border = "1px solid #d2d6da";
+            input.style.padding = "0.5rem";
+            input.style.borderRadius = "0.5rem"; // OVALADO
         }
+
+        addButton.addEventListener('click', function() {
+            let currentFormCount = parseInt(totalFormsInput.value, 10);
+            let newFormHtml = template.innerHTML.replace(/__prefix__/g, currentFormCount);
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = newFormHtml;
+            const newRow = tempDiv.firstElementChild;
+            
+            const inputs = newRow.querySelectorAll('input, select');
+            inputs.forEach(styleInput);
+
+            container.appendChild(newRow);
+            totalFormsInput.value = currentFormCount + 1;
+        });
+
+        container.addEventListener('click', function(e) {
+            const btn = e.target.closest('.btn-delete-row');
+            if (btn) {
+                e.preventDefault();
+                const row = btn.closest('.gasto-row');
+                const deleteCheckbox = row.querySelector('input[type="checkbox"][name$="-DELETE"]');
+                if (deleteCheckbox) {
+                    deleteCheckbox.checked = true;
+                    row.style.display = 'none';
+                } else {
+                    row.remove();
+                }
+            }
+        });
+
+        // Estilos iniciales
+        const existingInputs = container.querySelectorAll('input[type="text"], input[type="number"], select');
+        existingInputs.forEach(styleInput);
     });
-});
 </script>
+
 {% endblock %}

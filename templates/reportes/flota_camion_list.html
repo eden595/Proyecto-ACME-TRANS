@@ -2,64 +2,90 @@
 {% load static %}
 
 {% block title %}Gestión de Camiones - ACME TRANS{% endblock %}
-{% block page_title %}Gestión de Camiones{% endblock %}
+{% block page_title %}Flota de Camiones{% endblock %}
 
 {% block content %}
 
-<div class="content-card">
-    <div class="form-actions" style="margin-top: 0; margin-bottom: 1.5rem;">
-        <h4>Flota de Camiones</h4>
-        <a href="{% url 'flota_camion_create' %}" class="btn btn-primary" style="width: auto;">+ Añadir Camión</a>
-    </div>
-    
-    <table class="report-table">
-        <thead>
-            <tr>
-                <th>Patente</th>
-                <th>Centro</th>
-                <th>Estado</th>
-                <th>Chofer Asignado</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for camion in lista_camiones %}
-            <tr>
-                <td><strong>{{ camion.patente }}</strong></td>
-                <td>{{ camion.centro.nombre }}</td>
-                <td>
-                    {% if camion.estado == 'DISPONIBLE' %}
-                        <span class="status status-procesado">{{ camion.get_estado_display }}</span>
-                    {% elif camion.estado == 'EN_RUTA' %}
-                        <span class="status status-pendiente">{{ camion.get_estado_display }}</span>
-                    {% elif camion.estado == 'MANTENIMIENTO' %}
-                        <span class="status status-rechazado">{{ camion.get_estado_display }}</span>
-                    {% else %}
-                        <span class="status">{{ camion.get_estado_display }}</span>
-                    {% endif %}
-                </td>
-                <td>
-                    {% if camion.chofer_asignado %}
-                        {{ camion.chofer_asignado.nombre }}
-                    {% else %}
-                        <span style="color: var(--color-text-light);">Sin chofer</span>
-                    {% endif %}
-                </td>
-                <td>
-                    <a href="{% url 'flota_camion_update' camion.pk %}" class="btn-link">Editar</a>
-                    <a href="{% url 'flota_camion_delete' camion.pk %}" class="btn-link" style="color: var(--color-red); margin-left: 10px;"
-                       onclick="return confirm('¿Estás seguro de que quieres eliminar la patente {{ camion.patente }}?');">
-                       Eliminar
+<div class="row">
+    <div class="col-12">
+        <div class="card my-4 border-radius-xl">
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                <div class="bg-gradient-primary shadow-primary border-radius-xl pt-4 pb-3 d-flex justify-content-between align-items-center px-3">
+                    <h6 class="text-white text-capitalize ps-3 mb-0">Listado de Camiones</h6>
+                    
+                    <a href="{% url 'flota_camion_create' %}" class="btn bg-white text-dark font-weight-bold btn-sm mb-0 border-radius-lg d-flex align-items-center">
+                        <i class="material-icons text-sm me-1">add</i> Añadir Camión
                     </a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="5">No hay camiones registrados.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                </div>
+            </div>
+            
+            <div class="card-body px-0 pb-2">
+                <div class="table-responsive p-0">
+                    <table class="table align-items-center mb-0">
+                        <thead>
+                            <tr>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Patente</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Centro</th>
+                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Estado</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Chofer</th>
+                                <th class="text-secondary opacity-7"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for camion in lista_camiones %}
+                            <tr>
+                                <td class="py-1">
+                                    <div class="d-flex px-2 py-1">
+                                        <div class="icon-table bg-gradient-info shadow-info me-2">
+                                            <i class="material-icons text-white">local_shipping</i>
+                                        </div>
+                                        <div class="d-flex flex-column justify-content-center">
+                                            <h6 class="mb-0 text-sm">{{ camion.patente }}</h6>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-1">
+                                    <p class="text-xs font-weight-bold mb-0">{{ camion.centro.nombre }}</p>
+                                </td>
+                                <td class="align-middle text-center text-sm py-1">
+                                    {% if camion.estado == 'DISPONIBLE' %}
+                                        <span class="badge badge-sm rounded-pill bg-gradient-success">{{ camion.get_estado_display }}</span>
+                                    {% elif camion.estado == 'EN_RUTA' %}
+                                        <span class="badge badge-sm rounded-pill bg-gradient-warning">{{ camion.get_estado_display }}</span>
+                                    {% elif camion.estado == 'MANTENIMIENTO' %}
+                                        <span class="badge badge-sm rounded-pill bg-gradient-danger">{{ camion.get_estado_display }}</span>
+                                    {% else %}
+                                        <span class="badge badge-sm rounded-pill bg-gradient-secondary">{{ camion.get_estado_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="py-1">
+                                    {% if camion.chofer_asignado %}
+                                        <span class="text-xs font-weight-bold text-dark">{{ camion.chofer_asignado.nombre }}</span>
+                                    {% else %}
+                                        <span class="text-secondary text-xs">---</span>
+                                    {% endif %}
+                                </td>
+                                <td class="align-middle text-end px-4 py-1">
+                                    <a href="{% url 'flota_camion_update' camion.pk %}" class="btn btn-link text-dark text-xs mb-0 px-2" title="Editar">
+                                        <i class="material-icons text-sm">edit</i>
+                                    </a>
+                                    <a href="{% url 'flota_camion_delete' camion.pk %}" class="btn btn-link text-danger text-xs mb-0 px-2" 
+                                       onclick="return confirm('¿Eliminar {{ camion.patente }}?');" title="Eliminar">
+                                        <i class="material-icons text-sm">delete</i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center p-4 text-secondary text-sm">No hay camiones registrados.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 {% endblock %}

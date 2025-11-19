@@ -1,77 +1,125 @@
 {% extends "reportes/base.html" %}
 {% load static %}
 
-{% block title %}Análisis de Reportes - ACME TRANS{% endblock %}
-{% block page_title %}Análisis de Reportes (Auditoría){% endblock %}
+{% block title %}Auditoría - ACME TRANS{% endblock %}
+{% block page_title %}Auditoría de Gastos{% endblock %}
 
 {% block content %}
 
-<div class="content-card">
-    <h4>Filtrar Reportes</h4>
-    
-    <form method="GET" action="{% url 'finanzas_dashboard' %}" class="filter-form">
-        
-        <div class="form-group">
-            <label>Centro</label>
-            <select name="centro" class="form-control">
-                <option value="">Todos los Centros</option>
-                {% for centro in todos_los_centros %}
-                    <option value="{{ centro.id }}" 
-                            {% if filtro_centro_id == centro.id|stringformat:"s" %}selected{% endif %}>
-                        {{ centro.nombre }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
+<style>
+    /* Oculta cualquier rastro de icono en las cabeceras de esta página */
+    .card-header .icon, 
+    .card-header .icon-shape, 
+    .card-header .material-icons {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+        opacity: 0 !important;
+    }
+    /* Asegura que el título esté alineado correctamente */
+    .card-header h6 {
+        margin: 0 !important;
+        padding-left: 10px;
+    }
+</style>
 
-        <div class="form-group">
-            <label>Fecha de Inicio</label>
-            <input type="date" name="fecha_inicio" class="form-control" 
-                   value="{{ filtro_fecha_inicio|default:'' }}">
+<div class="row">
+    <div class="col-12">
+        <div class="card my-4 border-radius-xl">
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                <div class="bg-gradient-primary shadow-primary border-radius-xl pt-4 pb-3">
+                    <h6 class="text-white text-capitalize">Filtrar Reportes</h6>
+                </div>
+            </div>
+            <div class="card-body px-0 pb-2">
+                <form method="GET" action="{% url 'finanzas_dashboard' %}" class="px-4 pb-3">
+                    <div class="row align-items-end">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold text-secondary">Centro</label>
+                            <div class="input-group input-group-outline">
+                                <select name="centro" class="form-control border-radius-lg" style="width: 100%;">
+                                    <option value="">Todos</option>
+                                    {% for centro in todos_los_centros %}
+                                        <option value="{{ centro.id }}" {% if filtro_centro_id == centro.id|stringformat:"s" %}selected{% endif %}>{{ centro.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label fw-bold text-secondary">Inicio</label>
+                            <div class="input-group input-group-outline">
+                                <input type="date" name="fecha_inicio" class="form-control border-radius-lg" value="{{ filtro_fecha_inicio|default:'' }}">
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label fw-bold text-secondary">Fin</label>
+                            <div class="input-group input-group-outline">
+                                <input type="date" name="fecha_fin" class="form-control border-radius-lg" value="{{ filtro_fecha_fin|default:'' }}">
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-2 mb-3 d-flex gap-2">
+                            <button type="submit" class="btn bg-gradient-dark w-100 font-weight-bold border-radius-lg" style="color: white !important;">Filtrar</button>
+                            <a href="{% url 'finanzas_dashboard' %}" class="btn btn-outline-secondary w-100 border-radius-lg">Limpiar</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
-        <div class="form-group">
-            <label>Fecha de Fin</label>
-            <input type="date" name="fecha_fin" class="form-control" 
-                   value="{{ filtro_fecha_fin|default:'' }}">
-        </div>
-        
-        <button type="submit" class="btn btn-primary">Filtrar</button>
-        <a href="{% url 'finanzas_dashboard' %}" class="btn btn-primary" style="width: auto;">Limpiar</a>
-    </form>
+    </div>
 </div>
 
-<div class="content-card">
-    <h4>Reportes Procesados</h4>
-    <p>Lista de reportes diarios (filtrada). Use esta vista para auditar y analizar los gastos.</p>
-    
-    <table class="report-table">
-        <thead>
-            <tr>
-                <th>Fecha de Generación</th>
-                <th>Centro</th>
-                <th>Autor</th>
-                <th>Acción</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for reporte in lista_reportes %}
-            <tr>
-                <td>{{ reporte.fecha|date:"d M, Y" }}</td>
-                <td>{{ reporte.centro.nombre }}</td>
-                <td>{{ reporte.autor.username }}</td>
-                
-                <td>
-                    <a href="{% url 'reporte_detalle' reporte.id %}" class="btn-link">Ver Detalles</a>
-                </td>
-                
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="4">No se encontraron reportes con esos filtros.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="row">
+    <div class="col-12">
+        <div class="card my-4 border-radius-xl">
+            
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                <div class="bg-gradient-success shadow-success border-radius-xl pt-4 pb-3">
+                    <h6 class="text-white text-capitalize">Reportes Procesados</h6>
+                </div>
+            </div>
+
+            <div class="card-body px-0 pb-2">
+                <div class="table-responsive p-0">
+                    <table class="table align-items-center mb-0">
+                        <thead>
+                            <tr>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Fecha</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Centro</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Autor</th>
+                                <th class="text-secondary opacity-7"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reporte in lista_reportes %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex px-2 py-1">
+                                        <div class="icon icon-shape icon-xs rounded-circle bg-gradient-light shadow text-center me-2 d-flex align-items-center justify-content-center" style="display: flex !important; width: 32px !important; height: 32px !important; opacity: 1 !important;">
+                                             <i class="material-icons opacity-10 text-dark text-xs" style="display: block !important; width: auto !important; height: auto !important; opacity: 1 !important;">receipt_long</i>
+                                        </div>
+                                        <div class="d-flex flex-column justify-content-center">
+                                            <h6 class="mb-0 text-sm">{{ reporte.fecha|date:"d M, Y" }}</h6>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><p class="text-xs font-weight-bold mb-0">{{ reporte.centro.nombre }}</p></td>
+                                <td><p class="text-xs font-weight-bold mb-0 text-secondary">{{ reporte.autor.username }}</p></td>
+                                <td class="align-middle">
+                                    <a href="{% url 'reporte_detalle' reporte.id %}" class="btn btn-link text-secondary mb-0 px-0">
+                                        <i class="material-icons text-sm me-1">visibility</i> Ver
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="4" class="text-center p-4 text-secondary">Sin resultados.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 {% endblock %}

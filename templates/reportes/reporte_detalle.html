@@ -1,58 +1,121 @@
 {% extends "reportes/base.html" %}
+{% load static %}
 
 {% block title %}Detalle de Reporte - ACME TRANS{% endblock %}
 {% block page_title %}Detalle de Reporte #{{ reporte.id }}{% endblock %}
 
 {% block content %}
 
-<div class="content-row">
-    <div class="content-card-small">
-        <h4>Resumen del Reporte</h4>
-        <ul class="activity-list">
-            <li><div class="activity-text"><strong>Centro:</strong> {{ reporte.centro.nombre }}</div></li>
-            <li><div class="activity-text"><strong>Autor:</strong> {{ reporte.autor.username }}</div></li>
-            <li><div class="activity-text"><strong>Fecha:</strong> {{ reporte.fecha }}</div></li>
-            <li><div class="activity-text"><strong>Estado:</strong> {{ reporte.get_estado_display }}</div></li>
-            <li><div class="activity-text"><strong>Total Items:</strong> {{ total_items }}</div></li>
-            <li><div class="activity-text"><strong>Monto Total:</strong> ${{ monto_total|floatformat:0 }}</div></li>
-        </ul>
+<style>
+    .card-header .icon-shape { display: none !important; }
+    .table .icon-shape { display: flex !important; }
+</style>
+
+<div class="row mb-4">
+    <div class="col-lg-4 col-md-12 mb-4">
         
-        <hr>
-        <h4>Datos Operacionales (Camiones)</h4>
-        <ul class="activity-list">
-             <li><div class="activity-text"><strong>Disponibles:</strong> {{ reporte.recursos_disponibles }}</div></li>
-             <li><div class="activity-text"><strong>Comprometidos:</strong> {{ reporte.recursos_comprometidos }}</div></li>
-             <li><div class="activity-text"><strong>En Mantenimiento:</strong> {{ reporte.recursos_mantenimiento }}</div></li>
-        </ul>
-        
-        <hr>
-        <a href="{% url 'descargar_reporte' reporte.id %}" class="btn btn-secondary" style="width: 100%;">Descargar (CSV)</a>
+        <div class="card mb-4 border-radius-xl">
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                <div class="bg-gradient-info shadow-info border-radius-xl pt-4 pb-3">
+                    <h6 class="text-white text-capitalize ps-3 m-0">Resumen</h6>
+                </div>
+            </div>
+            <div class="card-body p-3">
+                <ul class="list-group">
+                    <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Centro:</strong> &nbsp; {{ reporte.centro.nombre }}</li>
+                    <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">Autor:</strong> &nbsp; {{ reporte.autor.username }}</li>
+                    <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">Fecha:</strong> &nbsp; {{ reporte.fecha|date:"d M, Y H:i" }}</li>
+                    <li class="list-group-item border-0 ps-0 text-sm">
+                        <strong class="text-dark">Estado:</strong> &nbsp; 
+                        <span class="badge badge-sm bg-gradient-success">{{ reporte.get_estado_display }}</span>
+                    </li>
+                    <li class="list-group-item border-0 ps-0 pb-0">
+                        <strong class="text-dark text-lg">Total:</strong> &nbsp; 
+                        <span class="text-success text-lg font-weight-bolder">${{ monto_total|floatformat:0 }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card border-radius-xl">
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                <div class="bg-gradient-primary shadow-primary border-radius-xl pt-4 pb-3">
+                    <h6 class="text-white text-capitalize ps-3 m-0">Datos Operacionales</h6>
+                </div>
+            </div>
+            <div class="card-body p-3">
+                <ul class="list-group">
+                    <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                        <div class="d-flex align-items-center">
+                            <button class="btn btn-icon-only btn-rounded btn-outline-success mb-0 me-3 btn-sm d-flex align-items-center justify-content-center"><i class="material-icons text-sm">check</i></button>
+                            <span class="text-dark text-sm">Disponibles</span>
+                        </div>
+                        <span class="text-success text-sm font-weight-bold">{{ reporte.recursos_disponibles }}</span>
+                    </li>
+                    <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                        <div class="d-flex align-items-center">
+                            <button class="btn btn-icon-only btn-rounded btn-outline-warning mb-0 me-3 btn-sm d-flex align-items-center justify-content-center"><i class="material-icons text-sm">local_shipping</i></button>
+                            <span class="text-dark text-sm">En Ruta</span>
+                        </div>
+                        <span class="text-warning text-sm font-weight-bold">{{ reporte.recursos_comprometidos }}</span>
+                    </li>
+                    <li class="list-group-item border-0 d-flex justify-content-between ps-0 border-radius-lg">
+                        <div class="d-flex align-items-center">
+                            <button class="btn btn-icon-only btn-rounded btn-outline-danger mb-0 me-3 btn-sm d-flex align-items-center justify-content-center"><i class="material-icons text-sm">build</i></button>
+                            <span class="text-dark text-sm">Mantenimiento</span>
+                        </div>
+                        <span class="text-danger text-sm font-weight-bold">{{ reporte.recursos_mantenimiento }}</span>
+                    </li>
+                </ul>
+                <hr class="horizontal dark mt-4">
+                <a href="{% url 'descargar_reporte' reporte.id %}" class="btn btn-outline-dark w-100 mb-0 border-radius-lg">
+                    <i class="material-icons text-sm me-1">download</i> Descargar CSV
+                </a>
+            </div>
+        </div>
     </div>
 
-    <div class="content-card-large">
-        <h4>Gastos Registrados en este Reporte</h4>
-        <table class="report-table">
-            <thead>
-                <tr>
-                    <th>Categoría</th>
-                    <th>Descripción</th>
-                    <th>Monto</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for gasto in gastos %}
-                <tr>
-                    <td>{{ gasto.get_categoria_display }}</td>
-                    <td>{{ gasto.descripcion }}</td>
-                    <td>${{ gasto.monto|floatformat:0 }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="3">Este reporte no tiene gastos registrados.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="col-lg-8 col-md-12">
+        <div class="card h-100 border-radius-xl">
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                <div class="bg-gradient-dark shadow-dark border-radius-xl pt-4 pb-3">
+                    <h6 class="text-white text-capitalize ps-3 m-0">Gastos Registrados</h6>
+                </div>
+            </div>
+            <div class="card-body px-0 pb-2">
+                <div class="table-responsive p-0">
+                    <table class="table align-items-center mb-0">
+                        <thead>
+                            <tr>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Categoría</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Descripción</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Monto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for gasto in gastos %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex px-2 py-1">
+                                        <div class="icon icon-shape icon-xs rounded-circle bg-gradient-light shadow text-center me-2 d-flex align-items-center justify-content-center">
+                                            <i class="material-icons opacity-10 text-dark text-xs">receipt</i>
+                                        </div>
+                                        <div class="d-flex flex-column justify-content-center">
+                                            <h6 class="mb-0 text-sm">{{ gasto.get_categoria_display }}</h6>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><p class="text-xs font-weight-bold mb-0 text-wrap">{{ gasto.descripcion }}</p></td>
+                                <td><p class="text-xs font-weight-bold mb-0 text-dark">${{ gasto.monto|floatformat:0 }}</p></td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="3" class="text-center p-4 text-secondary">Sin gastos registrados.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

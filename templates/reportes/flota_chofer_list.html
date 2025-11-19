@@ -6,42 +6,70 @@
 
 {% block content %}
 
-<div class="content-card">
-    <div class="form-actions" style="margin-top: 0; margin-bottom: 1.5rem;">
-        <h4>Choferes Registrados</h4>
-        <a href="{% url 'flota_chofer_create' %}" class="btn btn-primary" style="width: auto;">+ Añadir Chofer</a>
-    </div>
-    
-    <table class="report-table">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>RUT</th>
-                <th>Centro</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for chofer in lista_choferes %}
-            <tr>
-                <td><strong>{{ chofer.nombre }}</strong></td>
-                <td>{{ chofer.rut }}</td>
-                <td>{{ chofer.centro.nombre }}</td>
-                <td>
-                    <a href="{% url 'flota_chofer_update' chofer.pk %}" class="btn-link">Editar</a>
-                    <a href="{% url 'flota_chofer_delete' chofer.pk %}" class="btn-link" style="color: var(--color-red); margin-left: 10px;"
-                       onclick="return confirm('¿Estás seguro de que quieres eliminar a {{ chofer.nombre }}?');">
-                       Eliminar
+<div class="row">
+    <div class="col-12">
+        <div class="card my-4 border-radius-xl">
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                <div class="bg-gradient-primary shadow-primary border-radius-xl pt-4 pb-3 d-flex justify-content-between align-items-center px-3">
+                    <h6 class="text-white text-capitalize ps-3 mb-0">Listado de Choferes</h6>
+                    
+                    <a href="{% url 'flota_chofer_create' %}" class="btn bg-white text-dark font-weight-bold btn-sm mb-0 border-radius-lg d-flex align-items-center">
+                        <i class="material-icons text-sm me-1">add</i> Añadir Chofer
                     </a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="4">No hay choferes registrados.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                </div>
+            </div>
+            
+            <div class="card-body px-0 pb-2">
+                <div class="table-responsive p-0">
+                    <table class="table align-items-center mb-0">
+                        <thead>
+                            <tr>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nombre</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">RUT</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Centro</th>
+                                <th class="text-secondary opacity-7"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for chofer in lista_choferes %}
+                            <tr>
+                                <td class="py-1">
+                                    <div class="d-flex px-2 py-1">
+                                        <div class="icon-table bg-gradient-success shadow-success me-2">
+                                            <i class="material-icons text-white">person</i>
+                                        </div>
+                                        <div class="d-flex flex-column justify-content-center">
+                                            <h6 class="mb-0 text-sm">{{ chofer.nombre }}</h6>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-1">
+                                    <p class="text-xs font-weight-bold mb-0">{{ chofer.rut }}</p>
+                                </td>
+                                <td class="py-1">
+                                    <p class="text-xs font-weight-bold mb-0">{{ chofer.centro.nombre }}</p>
+                                </td>
+                                <td class="align-middle text-end px-4 py-1">
+                                    <a href="{% url 'flota_chofer_update' chofer.pk %}" class="btn btn-link text-dark text-xs mb-0 px-2" title="Editar">
+                                        <i class="material-icons text-sm">edit</i>
+                                    </a>
+                                    <a href="{% url 'flota_chofer_delete' chofer.pk %}" class="btn btn-link text-danger text-xs mb-0 px-2"
+                                       onclick="return confirm('¿Eliminar a {{ chofer.nombre }}?');" title="Eliminar">
+                                        <i class="material-icons text-sm">delete</i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center p-4 text-secondary text-sm">No hay choferes registrados.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 {% endblock %}

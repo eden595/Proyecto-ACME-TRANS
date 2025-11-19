@@ -4,66 +4,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Panel de ACME TRANS{% endblock %}</title>
+    <title>{% block title %}ACME TRANS{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
 </head>
-<body class="app-body">
+<body>
 
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <span class="logo">AT</span>
-            <h1>ACME TRANS</h1>
+    <aside class="sidenav" id="sidenav-main">
+        <div class="sidenav-header">
+           <ul class="navbar-nav">
+    
+    {% if request.user.rol == "DIRECTOR" or request.user.is_superuser %}
+        <li class="nav-item mt-3">
+            <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">Principal</h6>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link text-white {% if page_name == 'panel' %}active bg-gradient-primary{% endif %}" href="{% url 'dashboard' %}">
+                <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                    <i class="material-icons opacity-10">dashboard</i>
+                </div>
+                <span class="nav-link-text ms-1">Panel Director</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link text-white {% if page_name == 'reportes' %}active bg-gradient-primary{% endif %}" href="{% url 'reportes' %}">
+                <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                    <i class="material-icons opacity-10">table_view</i>
+                </div>
+                <span class="nav-link-text ms-1">Reportes</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link text-white {% if page_name == 'flota' %}active bg-gradient-primary{% endif %}" href="{% url 'flota' %}">
+                <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                    <i class="material-icons opacity-10">directions_bus</i>
+                </div>
+                <span class="nav-link-text ms-1">Ver Flota</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link text-white {% if page_name == 'configuracion' %}active bg-gradient-primary{% endif %}" href="{% url 'configuracion' %}">
+                <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                    <i class="material-icons opacity-10">settings</i>
+                </div>
+                <span class="nav-link-text ms-1">Configuración</span>
+            </a>
+        </li>
+    {% endif %}
+
+    {% if request.user.rol == "FINANZAS" %}
+        <li class="nav-item mt-3">
+            <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">Finanzas</h6>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white {% if page_name == 'finanzas' %}active bg-gradient-primary{% endif %}" href="{% url 'finanzas_dashboard' %}">
+                <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                    <i class="material-icons opacity-10">receipt_long</i>
+                </div>
+                <span class="nav-link-text ms-1">Auditoría Gastos</span>
+            </a>
+        </li>
+    {% endif %}
+
+    {% if request.user.rol == "OPERACIONES" %}
+        <li class="nav-item mt-3">
+            <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">Operaciones</h6>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white {% if page_name == 'flota_camiones' %}active bg-gradient-primary{% endif %}" href="{% url 'flota_camion_list' %}">
+                <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                    <i class="material-icons opacity-10">local_shipping</i>
+                </div>
+                <span class="nav-link-text ms-1">Gestionar Camiones</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white {% if page_name == 'flota_choferes' %}active bg-gradient-primary{% endif %}" href="{% url 'flota_chofer_list' %}">
+                <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                    <i class="material-icons opacity-10">badge</i>
+                </div>
+                <span class="nav-link-text ms-1">Gestionar Choferes</span>
+            </a>
+        </li>
+    {% endif %}
+
+    {% if request.user.rol == "ADMIN" %}
+        <li class="nav-item mt-3">
+            <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">Ingreso</h6>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white {% if page_name == 'entrada_datos' %}active bg-gradient-primary{% endif %}" href="{% url 'entrada_datos' %}">
+                <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                    <i class="material-icons opacity-10">post_add</i>
+                </div>
+                <span class="nav-link-text ms-1">Ingresar Datos</span>
+            </a>
+        </li>
+    {% endif %}
+
+</ul>
         </div>
-        <nav class="sidebar-nav">
-            
-            {% if request.user.rol == "DIRECTOR" %}
-                <a href="{% url 'dashboard' %}" class="nav-item {% if page_name == 'panel' %}active{% endif %}">Panel (Director)</a>
-                <a href="{% url 'reportes' %}" class="nav-item {% if page_name == 'reportes' %}active{% endif %}">Reportes</a>
-                <a href="{% url 'flota' %}" class="nav-item {% if page_name == 'flota' %}active{% endif %}">Ver Flota</a>
-                <a href="{% url 'configuracion' %}" class="nav-item {% if page_name == 'configuracion' %}active{% endif %}">Configuración</a>
-            
-            {% elif request.user.rol == "OPERACIONES" %}
-                <a href="{% url 'flota_camion_list' %}" class="nav-item {% if page_name == 'flota_camiones' %}active{% endif %}">Gestionar Camiones</a>
-                <a href="{% url 'flota_chofer_list' %}" class="nav-item {% if page_name == 'flota_choferes' %}active{% endif %}">Gestionar Choferes</a>
-            
-            {% elif request.user.rol == "FINANZAS" %}
-                <a href="{% url 'finanzas_dashboard' %}" class="nav-item {% if page_name == 'finanzas' %}active{% endif %}">Análisis de Reportes</a>
-
-            {% elif request.user.rol == "ADMIN" %}
-                <a href="{% url 'entrada_datos' %}" class="nav-item {% if page_name == 'entrada_datos' %}active{% endif %}">Entrada de Datos</a>
-            {% endif %}
-            
-        </nav>
-        <div class="sidebar-footer">
-            <p>ACME TRANS v1.0</p>
+        <div class="sidenav-footer w-100 bottom-0 p-3">
+            <a class="btn bg-gradient-primary w-100" href="{% url 'logout' %}">Cerrar Sesión</a>
         </div>
     </aside>
 
-    <div class="main-content">
-        <header class="topbar">
-            <div class="topbar-title">
-                {% block page_title %}Panel{% endblock %}
-            </div>
-            <div class="topbar-user">
-                <span>{{ request.user.rol }} - {{ request.user.username }}</span>
-                <a href="{% url 'logout' %}" class="btn-logout">Cerrar Sesión</a>
-            </div>
-        </header>
-        <main class="page-content">
-            {% if messages %}
-                <div class="messages-container">
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-                {% endfor %}
+    <main class="main-content">
+        <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur">
+            <div class="container-fluid py-1 px-3">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
+                        <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Páginas</a></li>
+                        <li class="breadcrumb-item text-sm text-dark active" aria-current="page">{% block page_title %}Panel{% endblock %}</li>
+                    </ol>
+                </nav>
+                <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
+                    <ul class="navbar-nav ms-auto justify-content-end">
+                        <li class="nav-item d-flex align-items-center">
+                            <a href="javascript:;" class="nav-link-user px-0">
+                                <i class="material-icons me-sm-1">account_circle</i>
+                                <span class="d-sm-inline d-none">{{ request.user.username|default:"Usuario"|title }}</span>
+                            </a>
+                        </li>
+                    </ul>
                 </div>
+            </div>
+        </nav>
+
+        <div class="container-fluid py-4">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} text-white fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close text-white" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
             {% endif %}
+
             {% block content %}
             {% endblock %}
-        </main>
-    </div>
+        </div>
+        
+        <footer class="footer py-4">
+            <div class="container-fluid">
+                <div class="row align-items-center justify-content-lg-between">
+                    <div class="col-12 mb-lg-0 mb-4">
+                        <div class="copyright text-center text-sm text-muted text-lg-start">
+                            © 2025 ACME TRANS
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
