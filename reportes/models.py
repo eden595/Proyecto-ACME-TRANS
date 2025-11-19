@@ -37,7 +37,7 @@ class Camion(models.Model):
     patente = models.CharField(max_length=8, unique=True, primary_key=True)
     estado = models.CharField(max_length=50, choices=EstadoCamion.choices, default=EstadoCamion.DISPONIBLE)
     centro = models.ForeignKey(Centro, on_delete=models.CASCADE, related_name="camiones")
-    chofer_asignado = models.ForeignKey(Chofer, on_delete=models.SET_NULL, null=True, blank=True)
+    chofer_asignado = models.OneToOneField(Chofer, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return f"{self.patente} ({self.estado})"

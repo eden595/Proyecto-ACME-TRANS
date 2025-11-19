@@ -40,9 +40,7 @@ class CamionForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Hacemos que la lista de choferes se limite al centro seleccionado (si ya existe)
-        # o que esté vacía si es un camión nuevo.
-        # Esto requiere JS para funcionar dinámicamente, pero es un buen comienzo.
+        # (El resto de tu método __init__ sigue igual)
         if 'instance' in kwargs and kwargs['instance'].centro:
             self.fields['chofer_asignado'].queryset = Chofer.objects.filter(centro=kwargs['instance'].centro)
         else:
@@ -52,6 +50,20 @@ class CamionForm(forms.ModelForm):
             self.fields[field].widget.attrs.update({'class': 'form-control'})
         
         self.fields['chofer_asignado'].required = False
+
+    # --- ¡NUEVO MÉTODO AÑADIDO! ---
+    def save(self, commit=True):
+        camion = super().save(commit=False)
+
+        # --- LÓGICA CORREGIDA ---
+        # Si el estado es DISPONIBLE o MANTENIMIENTO, el chofer debe ser NULO.
+        # El chofer solo se asigna si el estado es EN RUTA.
+        if camion.estado == Camion.EstadoCamion.DISPONIBLE or camion.estado == Camion.EstadoCamion.MANTENIMIENTO:
+            camion.chofer_asignado = None
+        # --- FIN DE LA LÓGICA ---
+
+        if commit:
+            camion.save()
 
 
 # --- Formulario para Choferes ---
