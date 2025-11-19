@@ -134,7 +134,7 @@
     </div>
 
     <div class="col-lg-4 col-md-12 mb-4">
-        <div class="card h-100 border-radius-xl">
+        <div class="card border-radius-xl">
             <div class="card-header pb-0">
                 <h6>Actividad Reciente</h6>
             </div>
@@ -170,7 +170,6 @@
         const lineLabels = JSON.parse('{{ gastos_line_labels|safe }}');
         const lineData = JSON.parse('{{ gastos_line_data|safe }}');
 
-        // Configuración común para leyendas
         const commonLegendOptions = {
             display: true,
             position: 'bottom',
@@ -185,7 +184,7 @@
             }
         };
 
-        // 1. GRÁFICO DE LÍNEA (ROJA Y FONDO NEGRO)
+        // 1. GRÁFICO DE LÍNEA
         if (document.getElementById('chart-line')) {
             var ctxLine = document.getElementById("chart-line").getContext("2d");
             new Chart(ctxLine, {
@@ -199,9 +198,9 @@
                         pointRadius: 5,
                         pointBackgroundColor: "rgba(255, 255, 255, .8)",
                         pointBorderColor: "transparent",
-                        borderColor: "#F44336", // Línea ROJA
+                        borderColor: "#F44336",
                         borderWidth: 4,
-                        backgroundColor: "rgba(244, 67, 54, 0.2)", // Sombra ROJA suave
+                        backgroundColor: "rgba(244, 67, 54, 0.2)",
                         fill: true,
                         data: lineData,
                         maxBarThickness: 6
